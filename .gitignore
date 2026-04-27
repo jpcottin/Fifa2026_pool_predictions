@@ -1,0 +1,25 @@
+# Android
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+
+# Specific Android ignore
+*.apk
+*.ap_
+*.dex
+
+# Java
+*.class
+
+# Log files
+*.log
+
+# Generated files
+app/build/
+.kotlin/

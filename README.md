@@ -34,5 +34,3 @@ This app serves as the mobile UI Client for the service hosted at:
 3. Configure your local server URL in the **Admin** tab settings if testing against a local backend (`http://10.0.2.2:3000`).
 4. Build and run!
 
----
-*Created for the 2026 FIFA World Cup.*
