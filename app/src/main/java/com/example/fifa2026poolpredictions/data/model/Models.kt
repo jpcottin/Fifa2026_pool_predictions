@@ -82,10 +82,14 @@ data class CreateSelectionRequest(
 
 @Serializable
 data class UpdateMatchRequest(
+    val team1Id: String,
+    val team2Id: String,
+    val date: String?,
     val team1Goals: Int,
     val team2Goals: Int,
     val winner: String,
-    val phase: String
+    val phase: String,
+    val note: String?
 )
 
 @Serializable

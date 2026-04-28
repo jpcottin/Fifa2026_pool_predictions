@@ -90,10 +90,14 @@ class AdminViewModel(
         viewModelScope.launch {
             _state.value = s.copy(editingMatch = edit.copy(saving = true))
             val req = UpdateMatchRequest(
+                team1Id = edit.match.team1Id,
+                team2Id = edit.match.team2Id,
+                date = edit.match.date,
                 team1Goals = edit.team1Goals.toIntOrNull() ?: 0,
                 team2Goals = edit.team2Goals.toIntOrNull() ?: 0,
                 winner = edit.winner.name,
-                phase = edit.match.phase.name
+                phase = edit.match.phase.name,
+                note = edit.match.note
             )
             repository.updateMatch(edit.match.id, req).fold(
                 onSuccess = { updated ->
