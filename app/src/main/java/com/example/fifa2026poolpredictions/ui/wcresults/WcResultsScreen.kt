@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -22,7 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.fifa2026poolpredictions.data.model.Match
 import com.example.fifa2026poolpredictions.data.model.MatchResult
+import com.example.fifa2026poolpredictions.data.model.Phase
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +72,34 @@ fun WcResultsScreen(viewModel: WcResultsViewModel, modifier: Modifier = Modifier
                     items(s.groups) { group ->
                         GroupCard(group)
                     }
-                    
+
+                    if (s.knockoutByPhase.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "Knockout Stage",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF166534),
+                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                            )
+                        }
+                        s.knockoutByPhase.forEach { (phase, matches) ->
+                            item {
+                                Text(
+                                    text = phaseLabel(phase),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF6B7280),
+                                    letterSpacing = 0.8.sp,
+                                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                                )
+                            }
+                            items(matches) { match ->
+                                KnockoutMatchRow(match)
+                            }
+                        }
+                    }
+
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -231,6 +263,103 @@ fun GroupCard(group: GroupData) {
         }
     }
 }
+fun phaseLabel(phase: Phase): String = when (phase) {
+    Phase.R32 -> "ROUND OF 32"
+    Phase.R16 -> "ROUND OF 16"
+    Phase.QF -> "QUARTER-FINALS"
+    Phase.SF -> "SEMI-FINALS"
+    Phase.THIRD -> "THIRD PLACE PLAY-OFF"
+    Phase.FINAL -> "FINAL"
+    Phase.GROUP -> ""
+}
+
+fun formatMatchDate(dateStr: String?): String {
+    if (dateStr == null) return "TBD"
+    return try {
+        val inFmt = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val outFmt = SimpleDateFormat("MMM d", Locale.US)
+        outFmt.format(inFmt.parse(dateStr.take(10))!!)
+    } catch (e: Exception) {
+        dateStr.take(10)
+    }
+}
+
+@Composable
+fun KnockoutMatchRow(match: Match) {
+    val isTbd = match.team1.name.startsWith("TBD") || match.team2.name.startsWith("TBD")
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF9FAFB), RoundedCornerShape(8.dp))
+            .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(8.dp))
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (isTbd) {
+            Text(
+                text = match.note ?: "TBD vs TBD",
+                fontSize = 13.sp,
+                fontStyle = FontStyle.Italic,
+                color = Color(0xFF6B7280),
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = formatMatchDate(match.date),
+                fontSize = 12.sp,
+                color = Color(0xFF9CA3AF)
+            )
+        } else {
+            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                Text(
+                    match.team1.name,
+                    fontSize = 14.sp,
+                    fontWeight = if (match.winner == MatchResult.TEAM1) FontWeight.SemiBold else FontWeight.Medium,
+                    color = if (match.winner == MatchResult.TEAM1) Color(0xFF15803D) else Color(0xFF374151),
+                    maxLines = 1, overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(match.team1.flagEmoji, fontSize = 18.sp)
+            }
+            Box(modifier = Modifier.widthIn(min = 75.dp).padding(horizontal = 4.dp), contentAlignment = Alignment.Center) {
+                if (match.winner == MatchResult.UPCOMING) {
+                    Text(formatMatchDate(match.date), fontSize = 12.sp, color = Color(0xFF9CA3AF), maxLines = 1, softWrap = false)
+                } else {
+                    Text(
+                        "${match.team1Goals} – ${match.team2Goals}",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        maxLines = 1,
+                        softWrap = false
+                    )
+                }
+            }
+            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+                Text(match.team2.flagEmoji, fontSize = 18.sp)
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    match.team2.name,
+                    fontSize = 14.sp,
+                    fontWeight = if (match.winner == MatchResult.TEAM2) FontWeight.SemiBold else FontWeight.Medium,
+                    color = if (match.winner == MatchResult.TEAM2) Color(0xFF15803D) else Color(0xFF374151),
+                    maxLines = 1, overflow = TextOverflow.Ellipsis
+                )
+            }
+            if (match.winner == MatchResult.DRAW) {
+                Spacer(modifier = Modifier.width(4.dp))
+                Box(
+                    modifier = Modifier
+                        .background(Color(0xFFF3F4F6), RoundedCornerShape(16.dp))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                ) {
+                    Text("Draw", fontSize = 10.sp, color = Color(0xFF4B5563))
+                }
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun WcResultsRichPreview() {
