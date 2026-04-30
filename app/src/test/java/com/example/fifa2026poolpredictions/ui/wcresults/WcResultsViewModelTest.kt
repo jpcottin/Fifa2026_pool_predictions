@@ -62,6 +62,26 @@ class WcResultsViewModelTest {
     }
 
     @Test
+    fun `knockout matches are grouped by phase in correct order`() = runTest {
+        val tbd1 = Team("tbd1", "TBD 1", "❓", 0, 0.0)
+        val tbd2 = Team("tbd2", "TBD 2", "❓", 0, 0.0)
+        val matches = listOf(
+            Match("r32", "tbd1", "tbd2", tbd1, tbd2, "2026-06-28T12:00:00Z", Phase.R32, MatchResult.UPCOMING, 0, 0, "Runner-up Group A vs Runner-up Group B"),
+            Match("final", "tbd1", "tbd2", tbd1, tbd2, "2026-07-19T12:00:00Z", Phase.FINAL, MatchResult.UPCOMING, 0, 0, "Winner Match 101 vs Winner Match 102"),
+            Match("r16", "tbd1", "tbd2", tbd1, tbd2, "2026-07-04T12:00:00Z", Phase.R16, MatchResult.UPCOMING, 0, 0, "Winner Match 74 vs Winner Match 77"),
+        )
+        coEvery { repository.getMatches() } returns Result.success(matches)
+
+        viewModel = WcResultsViewModel(repository)
+        advanceUntilIdle()
+
+        val state = viewModel.state.value as WcResultsUiState.Success
+        val phases = state.knockoutByPhase.keys.toList()
+        assertEquals(listOf(Phase.R32, Phase.R16, Phase.FINAL), phases)
+        assertEquals("Runner-up Group A vs Runner-up Group B", state.knockoutByPhase[Phase.R32]?.first()?.note)
+    }
+
+    @Test
     fun `tie-breaking follows GD then GF`() = runTest {
         // Both win 1-0, but t1 wins another 5-0 while t3 wins 2-0
         val matches = listOf(

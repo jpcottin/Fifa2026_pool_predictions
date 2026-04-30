@@ -35,7 +35,10 @@ data class GroupData(
 
 sealed class WcResultsUiState {
     object Loading : WcResultsUiState()
-    data class Success(val groups: List<GroupData>) : WcResultsUiState()
+    data class Success(
+        val groups: List<GroupData>,
+        val knockoutByPhase: Map<Phase, List<Match>>
+    ) : WcResultsUiState()
     data class Error(val message: String) : WcResultsUiState()
 }
 
@@ -63,7 +66,13 @@ class WcResultsViewModel(private val repository: Fifa2026Repository) : ViewModel
                         buildGroupData(group, teamByName, groupMatchesOnly)
                     }
 
-                    _state.value = WcResultsUiState.Success(groupsData)
+                    val knockoutPhaseOrder = listOf(Phase.R32, Phase.R16, Phase.QF, Phase.SF, Phase.THIRD, Phase.FINAL)
+                    val knockoutByPhase = allMatches
+                        .filter { it.phase != Phase.GROUP }
+                        .groupBy { it.phase }
+                        .let { map -> knockoutPhaseOrder.filter { map.containsKey(it) }.associateWith { map[it]!! } }
+
+                    _state.value = WcResultsUiState.Success(groupsData, knockoutByPhase)
                 }
             } catch (e: Exception) {
                 _state.value = WcResultsUiState.Error(e.message ?: "Failed to load WC Results")
