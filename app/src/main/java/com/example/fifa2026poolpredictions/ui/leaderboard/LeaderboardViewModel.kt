@@ -2,9 +2,13 @@ package com.example.fifa2026poolpredictions.ui.leaderboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fifa2026poolpredictions.data.model.Match
+import com.example.fifa2026poolpredictions.data.model.MatchResult
 import com.example.fifa2026poolpredictions.data.model.Selection
 import com.example.fifa2026poolpredictions.data.model.Team
 import com.example.fifa2026poolpredictions.data.repository.Fifa2026Repository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,7 +24,9 @@ sealed class LeaderboardUiState {
     data class Success(
         val ranked: List<RankedSelection>,
         val showMineOnly: Boolean,
-        val currentUserId: String?
+        val currentUserId: String?,
+        val matchesPlayed: Int,
+        val matchesUpcoming: Int
     ) : LeaderboardUiState()
     data class Error(val message: String) : LeaderboardUiState()
 }
@@ -34,6 +40,7 @@ class LeaderboardViewModel(
 
     private var allSelections: List<Selection> = emptyList()
     private var teamMap: Map<String, Team> = emptyMap()
+    private var allMatches: List<Match> = emptyList()
     private var showMineOnly = false
 
     init {
@@ -43,16 +50,19 @@ class LeaderboardViewModel(
     fun load() {
         viewModelScope.launch {
             _state.value = LeaderboardUiState.Loading
-            val teamsResult = repository.getTeams()
-            val selectionsResult = repository.getSelections()
-            if (teamsResult.isSuccess && selectionsResult.isSuccess) {
-                teamMap = teamsResult.getOrThrow().associateBy { it.id }
-                allSelections = selectionsResult.getOrThrow()
-                    .sortedWith(compareByDescending<Selection> { it.score }.thenBy { it.createdAt })
+            try {
+                coroutineScope {
+                    val teamsDeferred = async { repository.getTeams().getOrThrow() }
+                    val selectionsDeferred = async { repository.getSelections().getOrThrow() }
+                    val matchesDeferred = async { repository.getMatches().getOrThrow() }
+                    teamMap = teamsDeferred.await().associateBy { it.id }
+                    allSelections = selectionsDeferred.await()
+                        .sortedWith(compareByDescending<Selection> { it.score }.thenBy { it.createdAt })
+                    allMatches = matchesDeferred.await()
+                }
                 updateState()
-            } else {
-                val err = (teamsResult.exceptionOrNull() ?: selectionsResult.exceptionOrNull())
-                _state.value = LeaderboardUiState.Error(err?.message ?: "Failed to load")
+            } catch (e: Exception) {
+                _state.value = LeaderboardUiState.Error(e.message ?: "Failed to load")
             }
         }
     }
@@ -76,6 +86,8 @@ class LeaderboardViewModel(
                 teams = sel.teamIds.mapNotNull { teamMap[it] }
             )
         }
-        _state.value = LeaderboardUiState.Success(ranked, showMineOnly, currentUserId)
+        val played = allMatches.count { it.winner != MatchResult.UPCOMING }
+        val upcoming = allMatches.count { it.winner == MatchResult.UPCOMING }
+        _state.value = LeaderboardUiState.Success(ranked, showMineOnly, currentUserId, played, upcoming)
     }
 }

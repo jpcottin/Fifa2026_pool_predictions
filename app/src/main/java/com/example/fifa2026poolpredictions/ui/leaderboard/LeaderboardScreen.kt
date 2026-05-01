@@ -118,6 +118,29 @@ fun LeaderboardContent(
                 }
             }
         }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                MatchStatCard(
+                    label = "Matches Played",
+                    value = state.matchesPlayed,
+                    valueColor = Color(0xFF15803D), // green-700
+                    modifier = Modifier.weight(1f)
+                )
+                MatchStatCard(
+                    label = "Matches to Go",
+                    value = state.matchesUpcoming,
+                    valueColor = Color(0xFF9CA3AF), // gray-400
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
         
         if (state.ranked.isEmpty()) {
             item {
@@ -279,6 +302,20 @@ fun ScoreDisplay(score: Double) {
     }
 }
 
+@Composable
+fun MatchStatCard(label: String, value: Int, valueColor: Color, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color(0xFFE5E7EB))
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Text(text = label, fontSize = 12.sp, color = Color(0xFF6B7280))
+            Text(text = value.toString(), fontSize = 30.sp, fontWeight = FontWeight.Bold, color = valueColor)
+        }
+    }
+}
+
 @Preview(showBackground = true, widthDp = 400)
 @Composable
 fun LeaderboardContentCompactPreview() {
@@ -322,7 +359,7 @@ fun LeaderboardContentCompactPreview() {
 
     MyApplicationTheme {
         LeaderboardContent(
-            state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = "u1"),
+            state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = "u1", matchesPlayed = 64, matchesUpcoming = 40),
             onToggleMine = {}
         )
     }
@@ -351,7 +388,7 @@ fun LeaderboardContentWidePreview() {
 
     MyApplicationTheme {
         LeaderboardContent(
-            state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = null),
+            state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = null, matchesPlayed = 64, matchesUpcoming = 40),
             onToggleMine = {}
         )
     }

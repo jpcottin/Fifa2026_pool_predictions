@@ -34,7 +34,7 @@ class LeaderboardUiTest {
         composeTestRule.setContent {
             MyApplicationTheme {
                 LeaderboardContent(
-                    state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = null),
+                    state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = null, matchesPlayed = 4, matchesUpcoming = 100),
                     onToggleMine = {}
                 )
             }
