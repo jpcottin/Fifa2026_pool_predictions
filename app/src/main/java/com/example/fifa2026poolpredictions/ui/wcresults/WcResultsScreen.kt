@@ -83,20 +83,8 @@ fun WcResultsScreen(viewModel: WcResultsViewModel, modifier: Modifier = Modifier
                                 modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                             )
                         }
-                        s.knockoutByPhase.forEach { (phase, matches) ->
-                            item {
-                                Text(
-                                    text = phaseLabel(phase),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF6B7280),
-                                    letterSpacing = 0.8.sp,
-                                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                                )
-                            }
-                            items(matches) { match ->
-                                KnockoutMatchRow(match)
-                            }
+                        item {
+                            KnockoutBracket(knockoutByPhase = s.knockoutByPhase)
                         }
                     }
 
