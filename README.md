@@ -12,6 +12,7 @@ This app serves as the mobile UI Client for the service hosted at:
 ## Features
 - **Google Authentication:** Secure login using modern Android Credential Manager.
 - **Leaderboard:** Real-time global rankings of all user selections.
+- **Home:** Tournament overview with player/selection counts, countdowns to kickoff and the Final, game state badge, and a full "How It Works" scoring guide.
 - **WC Results:** Live group standings, match results for all 12 groups, and a full knockout bracket (Round of 32 through Final) with a tab view on phones and a scaled canvas bracket on tablets/foldables.
 - **My Picks:** Manage and track your own team selections with live countdowns to the tournament start.
 - **Adaptive Layout:** Optimized for Phones, Tablets, and Foldables using Jetpack Compose.
@@ -26,7 +27,7 @@ This app serves as the mobile UI Client for the service hosted at:
 - **Navigation:** Navigation3 (modern Compose-first navigation)
 - **Dependency Injection:** Manual factory-based injection
 - **Local Storage:** DataStore (for tokens) and SharedPreferences (for settings)
-- **Testing:** JUnit 4 & Compose UI Test Rule — 58 instrumented UI tests covering Matches, Leaderboard, and WC Results across mid-tournament and full-tournament fixture scenarios, verified on phone, foldable (unfolded), and tablet form factors
+- **Testing:** JUnit 4 & Compose UI Test Rule — 72 instrumented UI tests covering Home, Matches, Leaderboard, and WC Results across mid-tournament and full-tournament fixture scenarios, verified on phone, foldable (unfolded), and tablet form factors
 
 ## Getting Started
 1. Clone the repository.

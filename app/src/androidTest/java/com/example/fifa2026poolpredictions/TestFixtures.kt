@@ -5,6 +5,7 @@ import com.example.fifa2026poolpredictions.ui.leaderboard.LeaderboardUiState
 import com.example.fifa2026poolpredictions.ui.leaderboard.RankedSelection
 import com.example.fifa2026poolpredictions.ui.matches.MatchSection
 import com.example.fifa2026poolpredictions.ui.matches.MatchesUiState
+import com.example.fifa2026poolpredictions.ui.home.HomeUiState
 import com.example.fifa2026poolpredictions.ui.wcresults.GroupData
 import com.example.fifa2026poolpredictions.ui.wcresults.Standing
 import com.example.fifa2026poolpredictions.ui.wcresults.WcResultsUiState
@@ -550,5 +551,34 @@ object TestFixtures {
         currentUserId = "u1",
         matchesPlayed = 104,
         matchesUpcoming = 0
+    )
+
+    // ── Home screen states ────────────────────────────────────────────────
+
+    fun homeStatePreparing(): HomeUiState = HomeUiState(
+        totalPlayers    = 12,
+        totalSelections = 27,
+        gameState       = "PREPARING",
+        daysToKickoff   = 41L,
+        daysToFinal     = 79L,
+        isLoading       = false
+    )
+
+    fun homeStateStarted(): HomeUiState = HomeUiState(
+        totalPlayers    = 12,
+        totalSelections = 27,
+        gameState       = "STARTED",
+        daysToKickoff   = 0L,
+        daysToFinal     = 14L,
+        isLoading       = false
+    )
+
+    fun homeStateFinished(): HomeUiState = HomeUiState(
+        totalPlayers    = 12,
+        totalSelections = 27,
+        gameState       = "STARTED",
+        daysToKickoff   = 0L,
+        daysToFinal     = 0L,
+        isLoading       = false
     )
 }

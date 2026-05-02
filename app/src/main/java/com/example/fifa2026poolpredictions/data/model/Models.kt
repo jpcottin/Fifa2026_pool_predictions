@@ -96,6 +96,12 @@ data class UpdateMatchRequest(
 data class UpdateGameStateRequest(val state: String)
 
 @Serializable
+data class Stats(
+    val totalPlayers: Int,
+    val totalSelections: Int
+)
+
+@Serializable
 data class JwtPayload(
     val id: String = "",
     val role: String = "PLAYER",

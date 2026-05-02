@@ -5,10 +5,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.unit.sp
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +32,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.example.fifa2026poolpredictions.auth.AuthState
 import com.example.fifa2026poolpredictions.ui.admin.AdminScreen
 import com.example.fifa2026poolpredictions.ui.admin.AdminViewModel
+import com.example.fifa2026poolpredictions.ui.home.HomeScreen
+import com.example.fifa2026poolpredictions.ui.home.HomeViewModel
 import com.example.fifa2026poolpredictions.ui.leaderboard.LeaderboardScreen
 import com.example.fifa2026poolpredictions.ui.leaderboard.LeaderboardViewModel
 import com.example.fifa2026poolpredictions.ui.login.LoginScreen
@@ -61,7 +65,7 @@ fun MainNavigation() {
             is AuthState.LoggedIn -> {
                 if (backStack.lastOrNull() is Login) {
                     backStack.removeLastOrNull()
-                    backStack.add(Leaderboard)
+                    backStack.add(Home)
                 }
             }
             is AuthState.LoggedOut -> {
@@ -95,6 +99,7 @@ fun MainNavigation() {
                     LoginScreen(viewModel = vm)
                 }
                 // Add these entries even if not logged in to prevent crash during backStack restoration/clearing
+                entry<Home> { Box(Modifier) }
                 entry<Leaderboard> { Box(Modifier) }
                 entry<WcResults> { Box(Modifier) }
                 entry<Matches> { Box(Modifier) }
@@ -125,6 +130,7 @@ fun MainNavigation() {
                 }
                 // Placeholder entries to prevent crash when NewSelection is on top of them
                 entry<Login> { Box(Modifier) }
+                entry<Home> { Box(Modifier) }
                 entry<Leaderboard> { Box(Modifier) }
                 entry<WcResults> { Box(Modifier) }
                 entry<Matches> { Box(Modifier) }
@@ -135,11 +141,12 @@ fun MainNavigation() {
         return
     }
 
-    var selectedDest by remember { mutableStateOf<NavKey>(Leaderboard) }
+    var selectedDest by remember { mutableStateOf<NavKey>(Home) }
 
     val destinations = buildList {
-        add(NavDestination(Leaderboard, "Leaderboard", Icons.Default.EmojiEvents))
-        add(NavDestination(WcResults, "WC Results", Icons.Default.TableChart))
+        add(NavDestination(Home, "Home", Icons.Default.Home))
+        add(NavDestination(Leaderboard, "Ranking", Icons.Default.EmojiEvents))
+        add(NavDestination(WcResults, "Results", Icons.Default.TableChart))
         add(NavDestination(Matches, "Matches", Icons.Default.SportsSoccer))
         add(NavDestination(MySelections, "My Picks", Icons.AutoMirrored.Filled.List))
         if (isAdmin) add(NavDestination(Admin, "Admin", Icons.Default.AdminPanelSettings))
@@ -150,7 +157,7 @@ fun MainNavigation() {
             destinations.forEach { dest ->
                 item(
                     icon = { Icon(dest.icon, contentDescription = dest.label) },
-                    label = { Text(dest.label) },
+                    label = { Text(dest.label, maxLines = 1, fontSize = 10.sp) },
                     selected = selectedDest == dest.key,
                     onClick = { selectedDest = dest.key }
                 )
@@ -159,6 +166,12 @@ fun MainNavigation() {
     ) {
         val repository = app.repository
         when (selectedDest) {
+            Home -> {
+                val vm: HomeViewModel = viewModel(key = "home_$userId", factory = viewModelFactory {
+                    initializer { HomeViewModel(repository) }
+                })
+                HomeScreen(viewModel = vm, onPickTeams = { selectedDest = MySelections })
+            }
             Leaderboard -> {
                 val vm: LeaderboardViewModel = viewModel(key = "leaderboard_$userId", factory = viewModelFactory {
                     initializer { LeaderboardViewModel(repository, userId) }

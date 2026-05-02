@@ -8,6 +8,7 @@ import com.example.fifa2026poolpredictions.data.model.MobileAuthRequest
 import com.example.fifa2026poolpredictions.data.model.MobileAuthResponse
 import com.example.fifa2026poolpredictions.data.model.Selection
 import com.example.fifa2026poolpredictions.data.model.Team
+import com.example.fifa2026poolpredictions.data.model.Stats
 import com.example.fifa2026poolpredictions.data.model.UpdateGameStateRequest
 import com.example.fifa2026poolpredictions.data.model.UpdateMatchRequest
 import retrofit2.http.Body
@@ -25,6 +26,9 @@ interface ApiService {
 
     @GET("api/matches")
     suspend fun getMatches(): List<Match>
+
+    @GET("api/stats")
+    suspend fun getStats(): Stats
 
     @GET("api/game-state")
     suspend fun getGameState(): GameState

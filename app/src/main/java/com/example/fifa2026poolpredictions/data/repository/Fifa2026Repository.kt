@@ -4,6 +4,7 @@ import com.example.fifa2026poolpredictions.data.model.AdminUser
 import com.example.fifa2026poolpredictions.data.model.CreateSelectionRequest
 import com.example.fifa2026poolpredictions.data.model.GameState
 import com.example.fifa2026poolpredictions.data.model.Match
+import com.example.fifa2026poolpredictions.data.model.Stats
 import com.example.fifa2026poolpredictions.data.model.MobileAuthRequest
 import com.example.fifa2026poolpredictions.data.model.MobileAuthResponse
 import com.example.fifa2026poolpredictions.data.model.Selection
@@ -13,6 +14,7 @@ import com.example.fifa2026poolpredictions.data.model.UpdateMatchRequest
 import com.example.fifa2026poolpredictions.data.network.ApiService
 
 class Fifa2026Repository(private val api: ApiService) {
+    suspend fun getStats(): Result<Stats> = runCatching { api.getStats() }
     suspend fun getTeams(): Result<List<Team>> = runCatching { api.getTeams() }
     suspend fun getSelections(): Result<List<Selection>> = runCatching { api.getSelections() }
     suspend fun getMatches(): Result<List<Match>> = runCatching { api.getMatches() }
