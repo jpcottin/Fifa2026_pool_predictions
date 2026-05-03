@@ -73,10 +73,11 @@ fun HomeContent(state: HomeUiState, onPickTeams: () -> Unit, modifier: Modifier 
                         textAlign = TextAlign.Center
                     )
                     Text(
-                        text = "Pick Your 8 · Follow Every Match · Win the Bragging Rights",
+                        text = "Pick Your 8 · Follow Every Match · Win the Bragging Rights",
                         fontSize = 14.sp,
                         color = Color(0xFF6B7280),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Surface(
                         shape = RoundedCornerShape(16.dp),
