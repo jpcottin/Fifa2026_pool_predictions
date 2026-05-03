@@ -23,7 +23,7 @@ val Phase.displayName: String get() = when (this) {
     Phase.R16 -> "Round of 16"
     Phase.QF -> "Quarter-Finals"
     Phase.SF -> "Semi-Finals"
-    Phase.THIRD -> "Third Place Play-off"
+    Phase.THIRD -> "3rd place game"
     Phase.FINAL -> "Final"
 }
 

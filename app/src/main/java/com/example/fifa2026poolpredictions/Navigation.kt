@@ -1,6 +1,7 @@
 package com.example.fifa2026poolpredictions
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AdminPanelSettings
@@ -164,48 +165,50 @@ fun MainNavigation() {
             }
         }
     ) {
-        val repository = app.repository
-        when (selectedDest) {
-            Home -> {
-                val vm: HomeViewModel = viewModel(key = "home_$userId", factory = viewModelFactory {
-                    initializer { HomeViewModel(repository) }
-                })
-                HomeScreen(viewModel = vm, onPickTeams = { selectedDest = MySelections })
-            }
-            Leaderboard -> {
-                val vm: LeaderboardViewModel = viewModel(key = "leaderboard_$userId", factory = viewModelFactory {
-                    initializer { LeaderboardViewModel(repository, userId) }
-                })
-                LeaderboardScreen(viewModel = vm)
-            }
-            WcResults -> {
-                val vm: WcResultsViewModel = viewModel(key = "wcresults_$userId", factory = viewModelFactory {
-                    initializer { WcResultsViewModel(repository) }
-                })
-                WcResultsScreen(viewModel = vm)
-            }
-            Matches -> {
-                val vm: MatchesViewModel = viewModel(key = "matches_$userId", factory = viewModelFactory {
-                    initializer { MatchesViewModel(repository) }
-                })
-                MatchesScreen(viewModel = vm)
-            }
-            MySelections -> {
-                val vm: SelectionsViewModel = viewModel(key = "selections_$userId", factory = viewModelFactory {
-                    initializer { SelectionsViewModel(repository, userId) }
-                })
-                SelectionsScreen(
-                    viewModel = vm,
-                    onAddNew = {
-                        backStack.add(NewSelection)
-                    }
-                )
-            }
-            Admin -> {
-                val vm: AdminViewModel = viewModel(key = "admin_$userId", factory = viewModelFactory {
-                    initializer { AdminViewModel(app, repository) }
-                })
-                AdminScreen(viewModel = vm)
+        Box(Modifier.statusBarsPadding()) {
+            val repository = app.repository
+            when (selectedDest) {
+                Home -> {
+                    val vm: HomeViewModel = viewModel(key = "home_$userId", factory = viewModelFactory {
+                        initializer { HomeViewModel(repository) }
+                    })
+                    HomeScreen(viewModel = vm, onPickTeams = { selectedDest = MySelections })
+                }
+                Leaderboard -> {
+                    val vm: LeaderboardViewModel = viewModel(key = "leaderboard_$userId", factory = viewModelFactory {
+                        initializer { LeaderboardViewModel(repository, userId) }
+                    })
+                    LeaderboardScreen(viewModel = vm)
+                }
+                WcResults -> {
+                    val vm: WcResultsViewModel = viewModel(key = "wcresults_$userId", factory = viewModelFactory {
+                        initializer { WcResultsViewModel(repository) }
+                    })
+                    WcResultsScreen(viewModel = vm)
+                }
+                Matches -> {
+                    val vm: MatchesViewModel = viewModel(key = "matches_$userId", factory = viewModelFactory {
+                        initializer { MatchesViewModel(repository) }
+                    })
+                    MatchesScreen(viewModel = vm)
+                }
+                MySelections -> {
+                    val vm: SelectionsViewModel = viewModel(key = "selections_$userId", factory = viewModelFactory {
+                        initializer { SelectionsViewModel(repository, userId) }
+                    })
+                    SelectionsScreen(
+                        viewModel = vm,
+                        onAddNew = {
+                            backStack.add(NewSelection)
+                        }
+                    )
+                }
+                Admin -> {
+                    val vm: AdminViewModel = viewModel(key = "admin_$userId", factory = viewModelFactory {
+                        initializer { AdminViewModel(app, repository) }
+                    })
+                    AdminScreen(viewModel = vm)
+                }
             }
         }
     }

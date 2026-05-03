@@ -316,7 +316,7 @@ private fun BracketCanvasView(byNote: Map<String, Match>, scale: Float) {
 
         // ── Third Place Play-off ─────────────────────────────────────────────
         Text(
-            text = "3rd Place Play-off · Jul 18",
+            text = "3rd place game · Jul 18",
             modifier = Modifier
                 .offset(x = finalColLeft.dp, y = thirdLabelTop.dp)
                 .width(cardW.dp),

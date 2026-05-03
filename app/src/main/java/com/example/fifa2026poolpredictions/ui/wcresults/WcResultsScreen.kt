@@ -256,7 +256,7 @@ fun phaseLabel(phase: Phase): String = when (phase) {
     Phase.R16 -> "ROUND OF 16"
     Phase.QF -> "QUARTER-FINALS"
     Phase.SF -> "SEMI-FINALS"
-    Phase.THIRD -> "THIRD PLACE PLAY-OFF"
+    Phase.THIRD -> "3rd place game"
     Phase.FINAL -> "FINAL"
     Phase.GROUP -> ""
 }
