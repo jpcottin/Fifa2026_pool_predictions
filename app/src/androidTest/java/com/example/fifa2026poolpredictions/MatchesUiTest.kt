@@ -205,6 +205,52 @@ class MatchesUiTest {
         assert(final.team1Goals == 1 && final.team2Goals == 3) { "Expected 1-3 scoreline" }
     }
 
+    // ── Extra time / penalty kicks annotation ─────────────────────────────
+
+    @Test
+    fun matches_extraTimeWin_showsEtAnnotation() {
+        val sections = listOf(
+            MatchSection(Phase.QF, listOf(
+                Match("et1", "1", "2", t1, t2, "2026-07-09", Phase.QF, MatchResult.TEAM1, 1, 0,
+                    extraTime = true)
+            ))
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme { MatchesList(sections = sections) }
+        }
+        composeTestRule.onNodeWithText("1 – 0").assertIsDisplayed()
+        composeTestRule.onNodeWithText("e.t.", substring = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun matches_penaltyKicks_showsEtAndPkAnnotation() {
+        val sections = listOf(
+            MatchSection(Phase.SF, listOf(
+                Match("pk1", "1", "3", t1, t3, "2026-07-14", Phase.SF, MatchResult.DRAW, 1, 1,
+                    extraTime = true, pkTeam1Goals = 5, pkTeam2Goals = 3)
+            ))
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme { MatchesList(sections = sections) }
+        }
+        composeTestRule.onNodeWithText("1 – 1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("e.t. · p.k. 5–3", substring = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun matches_normalResult_noEtAnnotation() {
+        val sections = listOf(
+            MatchSection(Phase.FINAL, listOf(
+                Match("f1", "1", "3", t1, t3, "2026-07-19", Phase.FINAL, MatchResult.TEAM1, 3, 1)
+            ))
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme { MatchesList(sections = sections) }
+        }
+        composeTestRule.onNodeWithText("3 – 1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("e.t.", substring = true).assertDoesNotExist()
+    }
+
     @Test
     fun matches_full_quarterFinalBrazilVsGermany() {
         val state = TestFixtures.matchesStateFull()

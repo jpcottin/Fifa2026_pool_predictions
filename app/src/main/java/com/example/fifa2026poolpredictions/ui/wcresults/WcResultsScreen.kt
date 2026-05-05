@@ -308,7 +308,7 @@ fun KnockoutMatchRow(match: Match) {
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(match.team1.flagEmoji, fontSize = 18.sp)
             }
-            Box(modifier = Modifier.widthIn(min = 75.dp).padding(horizontal = 4.dp), contentAlignment = Alignment.Center) {
+            Column(modifier = Modifier.widthIn(min = 75.dp).padding(horizontal = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 if (match.winner == MatchResult.UPCOMING) {
                     Text(formatMatchDate(match.date), fontSize = 12.sp, color = Color(0xFF9CA3AF), maxLines = 1, softWrap = false)
                 } else {
@@ -321,6 +321,17 @@ fun KnockoutMatchRow(match: Match) {
                         maxLines = 1,
                         softWrap = false
                     )
+                    if (match.extraTime) {
+                        val annotation = if (match.pkTeam1Goals != null && match.pkTeam2Goals != null)
+                            "e.t. · p.k. ${match.pkTeam1Goals}–${match.pkTeam2Goals}"
+                        else "e.t."
+                        Text(
+                            text = annotation,
+                            fontSize = 9.sp,
+                            color = Color(0xFF9CA3AF),
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
                 }
             }
             Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
