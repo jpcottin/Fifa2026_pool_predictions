@@ -113,7 +113,7 @@ fun SelectionsContent(
             }
         }
 
-        if (state.gameState?.state == "PREPARING" && state.mySelections.size < 3) {
+        if (state.canAddMore) {
             item {
                 CountdownTimer(deadline = deadline)
             }
@@ -246,6 +246,18 @@ fun SetsContent(teams: List<Team>, modifier: Modifier = Modifier) {
         .groupBy { it.set }
         .toSortedMap()
     val sortedSets = setGroups.entries.toList()
+
+    if (sortedSets.isEmpty()) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = "Team data unavailable.\nPull down to refresh.",
+                textAlign = TextAlign.Center,
+                color = Color(0xFF6B7280),
+                modifier = Modifier.padding(32.dp)
+            )
+        }
+        return
+    }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val isWide = maxWidth > 600.dp
