@@ -194,12 +194,12 @@ class WcResultsUiTest {
     }
 
     @Test
-    fun wcResultsState_full_brazilWinsFinal() {
+    fun wcResultsState_full_franceWinsFinal() {
         val state = TestFixtures.wcResultsStateFull()
         val finalMatch = state.knockoutByPhase.entries
             .first { it.key.name == "FINAL" }.value.first()
-        assert(finalMatch.winner.name == "TEAM1") { "Expected Brazil (TEAM1) to win the Final" }
-        assert(finalMatch.team1.name == "Brazil") { "Expected Brazil as team1 in the Final" }
+        assert(finalMatch.winner.name == "TEAM2") { "Expected France (TEAM2) to win the Final" }
+        assert(finalMatch.team2.name == "France") { "Expected France as team2 in the Final" }
     }
 
     @Test

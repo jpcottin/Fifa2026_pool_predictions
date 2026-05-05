@@ -17,7 +17,8 @@ sealed class SelectionsUiState {
     data class Success(
         val mySelections: List<MySelection>,
         val gameState: GameState?,
-        val canAddMore: Boolean
+        val canAddMore: Boolean,
+        val allTeams: List<Team> = emptyList()
     ) : SelectionsUiState()
     data class Error(val message: String) : SelectionsUiState()
 }
@@ -62,7 +63,8 @@ class SelectionsViewModel(
                 _state.value = SelectionsUiState.Success(
                     mySelections = mine,
                     gameState = gameState,
-                    canAddMore = isPreparing && deadline && mine.size < 3
+                    canAddMore = isPreparing && deadline && mine.size < 3,
+                    allTeams = teamsResult.getOrThrow()
                 )
             } else {
                 val err = teamsResult.exceptionOrNull() ?: selectionsResult.exceptionOrNull()
