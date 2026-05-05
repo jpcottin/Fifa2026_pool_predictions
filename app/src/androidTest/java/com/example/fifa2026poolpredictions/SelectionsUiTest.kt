@@ -43,6 +43,21 @@ class SelectionsUiTest {
     }
 
     @Test
+    fun selectionsContent_hidesCountdownWhenCanAddMoreIsFalse() {
+        val state = SelectionsUiState.Success(
+            mySelections = emptyList(),
+            gameState = GameState("singleton", "PREPARING"),
+            canAddMore = false
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme { SelectionsContent(state = state, onAddNew = {}) }
+        }
+        // canAddMore=false (e.g. deadline passed but gameState not yet switched) → no countdown, no button
+        composeTestRule.onNodeWithText("you have still", substring = true).assertDoesNotExist()
+        composeTestRule.onNodeWithText("+ New Selection").assertDoesNotExist()
+    }
+
+    @Test
     fun selectionsContent_showsClosedMessage_whenCompetitionStarted() {
         val state = SelectionsUiState.Success(
             mySelections = emptyList(),
@@ -61,6 +76,15 @@ class SelectionsUiTest {
     }
 
     // ── Sets tab ──────────────────────────────────────────────────────────
+
+    @Test
+    fun setsContent_showsEmptyMessageWhenTeamsUnavailable() {
+        composeTestRule.setContent {
+            MyApplicationTheme { SetsContent(teams = emptyList()) }
+        }
+        composeTestRule.onNodeWithText("unavailable", substring = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Set 1").assertDoesNotExist()
+    }
 
     @Test
     fun setsContent_showsSetHeaderForEachGroup() {
