@@ -108,8 +108,8 @@ class MatchesUiTest {
         composeTestRule.setContent {
             MyApplicationTheme { MatchesList(sections = focusedSections) }
         }
-        // Brazil wins the Final 3-1 → "Brazil" badge shown
-        composeTestRule.onAllNodesWithText("Brazil").onFirst().assertIsDisplayed()
+        // France wins the Final 3-1 → "France" badge shown
+        composeTestRule.onAllNodesWithText("France").onFirst().assertIsDisplayed()
     }
 
     // ── Mid-tournament state assertions (50 played, 54 upcoming) ──────────
@@ -197,12 +197,12 @@ class MatchesUiTest {
     }
 
     @Test
-    fun matches_full_brazilWinsFinal() {
+    fun matches_full_franceWinsFinal() {
         val state = TestFixtures.matchesStateFull()
         val final = state.sections.first { it.phase == Phase.FINAL }.matches.first()
-        assert(final.winner == MatchResult.TEAM1) { "Expected Brazil (TEAM1) to win the Final" }
-        assert(final.team1.name == "Brazil") { "Expected Brazil as team1 in Final" }
-        assert(final.team1Goals == 3 && final.team2Goals == 1) { "Expected 3-1 scoreline" }
+        assert(final.winner == MatchResult.TEAM2) { "Expected France (TEAM2) to win the Final" }
+        assert(final.team2.name == "France") { "Expected France as team2 in Final" }
+        assert(final.team1Goals == 1 && final.team2Goals == 3) { "Expected 1-3 scoreline" }
     }
 
     @Test

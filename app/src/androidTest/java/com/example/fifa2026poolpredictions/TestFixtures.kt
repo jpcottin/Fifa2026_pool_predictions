@@ -88,37 +88,60 @@ object TestFixtures {
     val panama      = Team("t48", "Panama",                 "🇵🇦", 8, 0.0)
 
     // ── 8 Players × 2 Selections ──────────────────────────────────────────
-    // Each selection: one team per set (1–8).
+    // Each selection: one team per set (1–8). Scores are computed from match results:
+    //   Group phase: Win=3pts, Draw=1pt, goals×0.3
+    //   Knockout:    Win=3pts, goals×0.5
 
-    // 50-game scenario scores → sorted: s1=320, s10=320(tie,later), s3=305, s7=290, s15=275, s13=260, s4=250, s8=245, s9=235, s11=230, s12=220, s6=210, s2=200, s14=190, s16=175, s5=165
-    // 104-game scenario scores → different winner: s3=450, s15=430, s1=410, s10=395, s7=380, s9=365, s13=350, s4=340, s8=325, s11=310, s2=295, s12=280, s14=265, s6=250, s16=235, s5=220
-    fun selections50(): List<Selection> = listOf(
-        Selection("s1",  "Alice Dream",    "u1", listOf("t09","t21","t10","t03","t19","t27","t14","t42"), 320.0, "2026-01-01T10:00:00Z", SelectionUser("Alice")),
-        Selection("s2",  "Alice Safe",     "u1", listOf("t33","t13","t22","t20","t24","t31","t15","t08"), 200.0, "2026-01-01T10:05:00Z", SelectionUser("Alice")),
-        Selection("s3",  "Bob Bold",       "u2", listOf("t17","t41","t34","t23","t26","t30","t11","t48"), 305.0, "2026-01-02T10:00:00Z", SelectionUser("Bob")),
-        Selection("s4",  "Bob Classic",    "u2", listOf("t29","t01","t46","t16","t35","t07","t18","t36"), 250.0, "2026-01-02T10:05:00Z", SelectionUser("Bob")),
-        Selection("s5",  "Carlos Power",   "u3", listOf("t37","t25","t06","t05","t02","t38","t28","t40"), 165.0, "2026-01-03T10:00:00Z", SelectionUser("Carlos")),
-        Selection("s6",  "Carlos Lucky",   "u3", listOf("t45","t32","t44","t12","t39","t47","t43","t04"), 210.0, "2026-01-03T10:05:00Z", SelectionUser("Carlos")),
-        Selection("s7",  "Diana Rocket",   "u4", listOf("t09","t13","t10","t16","t19","t27","t15","t48"), 290.0, "2026-01-04T10:00:00Z", SelectionUser("Diana")),
-        Selection("s8",  "Diana Steady",   "u4", listOf("t33","t21","t22","t03","t24","t31","t14","t42"), 245.0, "2026-01-04T10:05:00Z", SelectionUser("Diana")),
-        Selection("s9",  "Evan Underdog",  "u5", listOf("t17","t01","t34","t20","t26","t30","t11","t08"), 235.0, "2026-01-05T10:00:00Z", SelectionUser("Evan")),
-        Selection("s10", "Evan Fav",       "u5", listOf("t29","t41","t46","t23","t35","t07","t18","t36"), 320.0, "2026-01-05T10:05:00Z", SelectionUser("Evan")),
-        Selection("s11", "Fatima Strong",  "u6", listOf("t09","t41","t10","t05","t02","t38","t28","t40"), 230.0, "2026-01-06T10:00:00Z", SelectionUser("Fatima")),
-        Selection("s12", "Fatima Spicy",   "u6", listOf("t17","t25","t22","t12","t39","t47","t43","t04"), 220.0, "2026-01-06T10:05:00Z", SelectionUser("Fatima")),
-        Selection("s13", "George Wisdom",  "u7", listOf("t33","t13","t34","t20","t19","t27","t15","t48"), 260.0, "2026-01-07T10:00:00Z", SelectionUser("George")),
-        Selection("s14", "George Chaos",   "u7", listOf("t37","t01","t44","t16","t24","t07","t18","t08"), 190.0, "2026-01-07T10:05:00Z", SelectionUser("George")),
-        Selection("s15", "Hannah Rocket",  "u8", listOf("t29","t21","t06","t23","t26","t31","t18","t42"), 275.0, "2026-01-08T10:00:00Z", SelectionUser("Hannah")),
-        Selection("s16", "Hannah Steady",  "u8", listOf("t45","t32","t46","t03","t35","t38","t43","t36"), 175.0, "2026-01-08T10:05:00Z", SelectionUser("Hannah"))
+    private fun computeTeamScores(matches: List<Match>): Map<String, Double> {
+        val scores = mutableMapOf<String, Double>()
+        for (m in matches) {
+            if (m.winner == MatchResult.UPCOMING) continue
+            val mult = if (m.phase == Phase.GROUP) 0.3 else 0.5
+            val pts1 = when (m.winner) { MatchResult.TEAM1 -> 3.0; MatchResult.DRAW -> 1.0; else -> 0.0 }
+            val pts2 = when (m.winner) { MatchResult.TEAM2 -> 3.0; MatchResult.DRAW -> 1.0; else -> 0.0 }
+            scores[m.team1Id] = (scores[m.team1Id] ?: 0.0) + pts1 + m.team1Goals * mult
+            scores[m.team2Id] = (scores[m.team2Id] ?: 0.0) + pts2 + m.team2Goals * mult
+        }
+        return scores
+    }
+
+    private val selectionDefs = listOf(
+        Selection("s1",  "Alice Dream",   "u1", listOf("t09","t21","t10","t03","t19","t27","t14","t42"), 0.0, "2026-01-01T10:00:00Z", SelectionUser("Alice")),
+        Selection("s2",  "Alice Safe",    "u1", listOf("t33","t13","t22","t20","t24","t31","t15","t08"), 0.0, "2026-01-01T10:05:00Z", SelectionUser("Alice")),
+        Selection("s3",  "Bob Bold",      "u2", listOf("t17","t41","t34","t23","t26","t30","t11","t48"), 0.0, "2026-01-02T10:00:00Z", SelectionUser("Bob")),
+        Selection("s4",  "Bob Classic",   "u2", listOf("t29","t01","t46","t16","t35","t07","t18","t36"), 0.0, "2026-01-02T10:05:00Z", SelectionUser("Bob")),
+        Selection("s5",  "Carlos Power",  "u3", listOf("t37","t25","t06","t05","t02","t38","t28","t40"), 0.0, "2026-01-03T10:00:00Z", SelectionUser("Carlos")),
+        Selection("s6",  "Carlos Lucky",  "u3", listOf("t45","t32","t44","t12","t39","t47","t43","t04"), 0.0, "2026-01-03T10:05:00Z", SelectionUser("Carlos")),
+        Selection("s7",  "Diana Rocket",  "u4", listOf("t09","t13","t10","t16","t19","t27","t15","t48"), 0.0, "2026-01-04T10:00:00Z", SelectionUser("Diana")),
+        Selection("s8",  "Diana Steady",  "u4", listOf("t33","t21","t22","t03","t24","t31","t14","t42"), 0.0, "2026-01-04T10:05:00Z", SelectionUser("Diana")),
+        Selection("s9",  "Evan Underdog", "u5", listOf("t17","t01","t34","t20","t26","t30","t11","t08"), 0.0, "2026-01-05T10:00:00Z", SelectionUser("Evan")),
+        Selection("s10", "Evan Fav",      "u5", listOf("t29","t41","t46","t23","t35","t07","t18","t36"), 0.0, "2026-01-05T10:05:00Z", SelectionUser("Evan")),
+        Selection("s11", "Fatima Strong", "u6", listOf("t09","t41","t10","t05","t02","t38","t28","t40"), 0.0, "2026-01-06T10:00:00Z", SelectionUser("Fatima")),
+        Selection("s12", "Fatima Spicy",  "u6", listOf("t17","t25","t22","t12","t39","t47","t43","t04"), 0.0, "2026-01-06T10:05:00Z", SelectionUser("Fatima")),
+        Selection("s13", "George Wisdom", "u7", listOf("t33","t13","t34","t20","t19","t27","t15","t48"), 0.0, "2026-01-07T10:00:00Z", SelectionUser("George")),
+        Selection("s14", "George Chaos",  "u7", listOf("t37","t01","t44","t16","t24","t07","t18","t08"), 0.0, "2026-01-07T10:05:00Z", SelectionUser("George")),
+        Selection("s15", "Hannah Rocket", "u8", listOf("t29","t21","t06","t23","t26","t31","t18","t42"), 0.0, "2026-01-08T10:00:00Z", SelectionUser("Hannah")),
+        Selection("s16", "Hannah Steady", "u8", listOf("t45","t32","t46","t03","t35","t38","t43","t36"), 0.0, "2026-01-08T10:05:00Z", SelectionUser("Hannah"))
     )
 
-    fun selections104(): List<Selection> = selections50().map { sel ->
-        val score104 = mapOf(
-            "s1" to 410.0, "s2" to 295.0, "s3" to 450.0, "s4" to 340.0,
-            "s5" to 220.0, "s6" to 250.0, "s7" to 380.0, "s8" to 325.0,
-            "s9" to 365.0, "s10" to 395.0, "s11" to 310.0, "s12" to 280.0,
-            "s13" to 350.0, "s14" to 265.0, "s15" to 430.0, "s16" to 235.0
-        )
-        sel.copy(score = score104[sel.id] ?: sel.score)
+    fun selections50(): List<Selection> {
+        val ts = computeTeamScores(allGroupMatchesMid().filter { it.winner != MatchResult.UPCOMING })
+        return selectionDefs.map { sel -> sel.copy(score = sel.teamIds.sumOf { ts[it] ?: 0.0 }) }
+    }
+
+    fun selections104(): List<Selection> {
+        val ts = computeTeamScores(allGroupMatchesFull() + knockoutMatchesFull())
+        return selectionDefs.map { sel -> sel.copy(score = sel.teamIds.sumOf { ts[it] ?: 0.0 }) }
+    }
+
+    fun allTeamsWithScoresMid(): List<Team> {
+        val ts = computeTeamScores(allGroupMatchesMid().filter { it.winner != MatchResult.UPCOMING })
+        return allTeams.map { t -> t.copy(score = ts[t.id] ?: 0.0) }
+    }
+
+    fun allTeamsWithScoresFull(): List<Team> {
+        val ts = computeTeamScores(allGroupMatchesFull() + knockoutMatchesFull())
+        return allTeams.map { t -> t.copy(score = ts[t.id] ?: 0.0) }
     }
 
     fun rankedSelections(sels: List<Selection>): List<RankedSelection> {
@@ -350,7 +373,7 @@ object TestFixtures {
         )
         // Final
         val final_ = listOf(
-            knockoutMatch(Phase.FINAL, brazil, france, W, 3, 1, "2026-07-19", "Winner SF-1 vs Winner SF-2")
+            knockoutMatch(Phase.FINAL, brazil, france, L, 1, 3, "2026-07-19", "Winner SF-1 vs Winner SF-2")
         )
         return r32 + r16 + qf + sf + third + final_
     }

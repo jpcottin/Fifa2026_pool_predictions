@@ -40,15 +40,15 @@ class LeaderboardUiTest {
     }
 
     @Test
-    fun leaderboard_mid_topTwoTiedAtRankOne() {
+    fun leaderboard_mid_rankOneHasSingleGold() {
         composeTestRule.setContent {
             MyApplicationTheme {
                 LeaderboardContent(state = TestFixtures.leaderboardStateMid(), onToggleMine = {})
             }
         }
-        // s1 Alice Dream (320.0, createdAt earlier) and s10 Evan Fav (320.0, later) both rank 1
-        composeTestRule.onAllNodesWithText("🥇").assertCountEquals(2)
-        // Rank 3 (Bob Bold 305.0)
+        // s2 Alice Safe leads alone (47.0), no tie → exactly one gold
+        composeTestRule.onAllNodesWithText("🥇").assertCountEquals(1)
+        composeTestRule.onNodeWithText("🥈").assertIsDisplayed()
         composeTestRule.onNodeWithText("🥉").assertIsDisplayed()
     }
 
@@ -59,9 +59,10 @@ class LeaderboardUiTest {
                 LeaderboardContent(state = TestFixtures.leaderboardStateMid(), onToggleMine = {})
             }
         }
-        composeTestRule.onAllNodesWithText("320.0").assertCountEquals(2)
-        composeTestRule.onNodeWithText("305.0").assertIsDisplayed()
-        composeTestRule.onNodeWithText("290.0").assertIsDisplayed()
+        // s2 Alice Safe=47.0, s7 Diana Rocket=46.7, s1 Alice Dream=45.0
+        composeTestRule.onNodeWithText("47.0").assertIsDisplayed()
+        composeTestRule.onNodeWithText("46.7").assertIsDisplayed()
+        composeTestRule.onNodeWithText("45.0").assertIsDisplayed()
     }
 
     @Test
@@ -71,10 +72,10 @@ class LeaderboardUiTest {
                 LeaderboardContent(state = TestFixtures.leaderboardStateMid(), onToggleMine = {})
             }
         }
-        // Top two tied at 320 — both should be in initial visible area
+        // Rank 1: Alice Safe (47.0), Rank 2: Diana Rocket (46.7), Rank 3: Alice Dream (45.0)
+        composeTestRule.onNodeWithText("Alice Safe").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Diana Rocket").assertIsDisplayed()
         composeTestRule.onNodeWithText("Alice Dream").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Evan Fav").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Bob Bold").assertIsDisplayed()
     }
 
     @Test
@@ -139,15 +140,15 @@ class LeaderboardUiTest {
     }
 
     @Test
-    fun leaderboard_full_bobBoldLeadsWithNewScore() {
+    fun leaderboard_full_aliceDreamLeads() {
         composeTestRule.setContent {
             MyApplicationTheme {
                 LeaderboardContent(state = TestFixtures.leaderboardStateFull(), onToggleMine = {})
             }
         }
-        // Bob Bold now leads with 450.0 (was 3rd in mid with 305.0)
-        composeTestRule.onNodeWithText("Bob Bold").assertIsDisplayed()
-        composeTestRule.onNodeWithText("450.0").assertIsDisplayed()
+        // Alice Dream leads with 91.1 after all 104 matches
+        composeTestRule.onNodeWithText("Alice Dream").assertIsDisplayed()
+        composeTestRule.onNodeWithText("91.1").assertIsDisplayed()
     }
 
     @Test
@@ -165,8 +166,8 @@ class LeaderboardUiTest {
     @Test
     fun leaderboard_full_rankingChangedFromMid() {
         val ranked = TestFixtures.rankedSelections(TestFixtures.selections104())
-        assert(ranked.first().selection.id == "s3") {
-            "Expected Bob Bold (s3) at rank 1 after 104 games, got ${ranked.first().selection.id}"
+        assert(ranked.first().selection.id == "s1") {
+            "Expected Alice Dream (s1) at rank 1 after 104 games, got ${ranked.first().selection.id}"
         }
         assert(ranked.first().rank == 1)
     }

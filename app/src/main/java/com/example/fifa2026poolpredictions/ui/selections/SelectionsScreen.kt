@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,6 +27,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -42,6 +49,7 @@ import com.example.fifa2026poolpredictions.data.model.SelectionUser
 import com.example.fifa2026poolpredictions.data.model.Team
 import com.example.fifa2026poolpredictions.theme.MyApplicationTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -67,7 +75,19 @@ fun SelectionsScreen(
         }
         is SelectionsUiState.Success -> PullToRefreshBox(
             isRefreshing = false, onRefresh = { viewModel.load() }, modifier = modifier) {
-            SelectionsContent(state = s, onAddNew = onAddNew)
+            var selectedTab by remember { mutableIntStateOf(0) }
+            Column(modifier = Modifier.fillMaxSize()) {
+                PrimaryTabRow(selectedTabIndex = selectedTab) {
+                    Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 },
+                        text = { Text("My Picks") })
+                    Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 },
+                        text = { Text("Sets") })
+                }
+                when (selectedTab) {
+                    0 -> SelectionsContent(state = s, onAddNew = onAddNew)
+                    else -> SetsContent(teams = s.allTeams)
+                }
+            }
         }
     }
 }
@@ -212,6 +232,89 @@ fun MySelectionCard(item: MySelection, modifier: Modifier = Modifier) {
                     // Pad out empty spots if row < 4 items
                     repeat(4 - row.size) {
                         Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SetsContent(teams: List<Team>, modifier: Modifier = Modifier) {
+    val setGroups = teams
+        .filter { it.set > 0 }
+        .groupBy { it.set }
+        .toSortedMap()
+    val sortedSets = setGroups.entries.toList()
+
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val isWide = maxWidth > 600.dp
+        if (isWide) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(sortedSets, key = { it.key }) { (setNum, setTeams) ->
+                    SetCard(setNumber = setNum, teams = setTeams.sortedByDescending { it.score })
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(sortedSets, key = { it.key }) { (setNum, setTeams) ->
+                    SetCard(setNumber = setNum, teams = setTeams.sortedByDescending { it.score })
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SetCard(setNumber: Int, teams: List<Team>, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color(0xFFE5E7EB))
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = "Set $setNumber",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = Color(0xFF166534),
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            teams.forEach { team ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(team.flagEmoji, fontSize = 20.sp)
+                    Text(
+                        text = team.name,
+                        fontSize = 13.sp,
+                        modifier = Modifier.weight(1f),
+                        color = Color(0xFF374151)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .background(Color(0xFFF0FDF4), RoundedCornerShape(4.dp))
+                            .border(1.dp, Color(0xFF86EFAC), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "%.1f".format(team.score),
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = Color(0xFF15803D)
+                        )
                     }
                 }
             }
