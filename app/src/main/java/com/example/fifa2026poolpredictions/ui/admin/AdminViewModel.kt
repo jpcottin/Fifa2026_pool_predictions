@@ -18,6 +18,9 @@ data class MatchEditState(
     val team1Goals: String = match.team1Goals.toString(),
     val team2Goals: String = match.team2Goals.toString(),
     val winner: MatchResult = match.winner,
+    val extraTime: Boolean = match.extraTime,
+    val pkTeam1Goals: String = match.pkTeam1Goals?.toString() ?: "",
+    val pkTeam2Goals: String = match.pkTeam2Goals?.toString() ?: "",
     val saving: Boolean = false
 )
 
@@ -84,6 +87,21 @@ class AdminViewModel(
         _state.value = s.copy(editingMatch = s.editingMatch?.copy(winner = winner))
     }
 
+    fun updateEditExtraTime(extraTime: Boolean) {
+        val s = _state.value as? AdminUiState.Success ?: return
+        _state.value = s.copy(editingMatch = s.editingMatch?.copy(
+            extraTime = extraTime,
+            pkTeam1Goals = if (extraTime) s.editingMatch.pkTeam1Goals else "",
+            pkTeam2Goals = if (extraTime) s.editingMatch.pkTeam2Goals else ""
+        ))
+    }
+
+    fun updateEditPkGoals(pkTeam1Goals: String, pkTeam2Goals: String) {
+        val s = _state.value as? AdminUiState.Success ?: return
+        _state.value = s.copy(editingMatch = s.editingMatch?.copy(
+            pkTeam1Goals = pkTeam1Goals, pkTeam2Goals = pkTeam2Goals))
+    }
+
     fun saveMatchResult() {
         val s = _state.value as? AdminUiState.Success ?: return
         val edit = s.editingMatch ?: return
@@ -97,7 +115,10 @@ class AdminViewModel(
                 team2Goals = edit.team2Goals.toIntOrNull() ?: 0,
                 winner = edit.winner.name,
                 phase = edit.match.phase.name,
-                note = edit.match.note
+                note = edit.match.note,
+                extraTime = edit.extraTime,
+                pkTeam1Goals = if (edit.extraTime && edit.winner == MatchResult.DRAW) edit.pkTeam1Goals.toIntOrNull() else null,
+                pkTeam2Goals = if (edit.extraTime && edit.winner == MatchResult.DRAW) edit.pkTeam2Goals.toIntOrNull() else null
             )
             repository.updateMatch(edit.match.id, req).fold(
                 onSuccess = { updated ->

@@ -14,6 +14,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fifa2026poolpredictions.data.model.Match
 import com.example.fifa2026poolpredictions.data.model.MatchResult
+import com.example.fifa2026poolpredictions.data.model.Phase
 import com.example.fifa2026poolpredictions.theme.MyApplicationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +60,8 @@ fun AdminScreen(viewModel: AdminViewModel, modifier: Modifier = Modifier) {
                     onDismiss = { viewModel.dismissEdit() },
                     onGoalsChange = { t1, t2 -> viewModel.updateEditGoals(t1, t2) },
                     onWinnerChange = { viewModel.updateEditWinner(it) },
+                    onExtraTimeChange = { viewModel.updateEditExtraTime(it) },
+                    onPkGoalsChange = { t1, t2 -> viewModel.updateEditPkGoals(t1, t2) },
                     onSave = { viewModel.saveMatchResult() }
                 )
             }
@@ -203,8 +207,13 @@ fun MatchEditDialog(
     onDismiss: () -> Unit,
     onGoalsChange: (String, String) -> Unit,
     onWinnerChange: (MatchResult) -> Unit,
+    onExtraTimeChange: (Boolean) -> Unit,
+    onPkGoalsChange: (String, String) -> Unit,
     onSave: () -> Unit
 ) {
+    val isKnockout = editState.match.phase != Phase.GROUP
+    val hasResult = editState.winner != MatchResult.UPCOMING
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("${editState.match.team1.name} vs ${editState.match.team2.name}") },
@@ -240,6 +249,44 @@ fun MatchEditDialog(
                         RadioButton(selected = editState.winner == result,
                             onClick = { onWinnerChange(result) })
                         Text(label, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+
+                if (isKnockout && hasResult) {
+                    HorizontalDivider()
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { onExtraTimeChange(!editState.extraTime) }
+                    ) {
+                        Checkbox(
+                            checked = editState.extraTime,
+                            onCheckedChange = { onExtraTimeChange(it) }
+                        )
+                        Text("Extra time played", style = MaterialTheme.typography.bodyMedium)
+                    }
+
+                    if (editState.extraTime && editState.winner == MatchResult.DRAW) {
+                        Text("Penalty kicks", style = MaterialTheme.typography.labelMedium)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = editState.pkTeam1Goals,
+                                onValueChange = { onPkGoalsChange(it, editState.pkTeam2Goals) },
+                                label = { Text(editState.match.team1.flagEmoji) },
+                                modifier = Modifier.weight(1f),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                singleLine = true,
+                                placeholder = { Text("0") }
+                            )
+                            OutlinedTextField(
+                                value = editState.pkTeam2Goals,
+                                onValueChange = { onPkGoalsChange(editState.pkTeam1Goals, it) },
+                                label = { Text(editState.match.team2.flagEmoji) },
+                                modifier = Modifier.weight(1f),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                singleLine = true,
+                                placeholder = { Text("0") }
+                            )
+                        }
                     }
                 }
             }
