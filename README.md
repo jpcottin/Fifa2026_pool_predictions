@@ -27,7 +27,7 @@ This app serves as the mobile UI Client for the service hosted at:
 - **Navigation:** Navigation3 (modern Compose-first navigation)
 - **Dependency Injection:** Manual factory-based injection
 - **Local Storage:** DataStore (for tokens) and SharedPreferences (for settings)
-- **Testing:** JUnit 4 & Compose UI Test Rule — 84 instrumented UI tests covering Home, Matches, Leaderboard, WC Results, and Selections (including Sets tab with tournament-accurate scores) across mid-tournament and full-tournament fixture scenarios, verified on phone, foldable (unfolded), and tablet form factors
+- **Testing:** JUnit 4 & Compose UI Test Rule — 90 instrumented UI tests covering Home, Matches (including extra time and penalty kick annotations), Leaderboard, WC Results (including knockout ET/PK annotations), and Selections (including Sets tab with tournament-accurate scores) across mid-tournament and full-tournament fixture scenarios, verified on phone, foldable (unfolded), and tablet form factors
 
 ## Getting Started
 1. Clone the repository.

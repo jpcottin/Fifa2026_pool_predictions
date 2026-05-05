@@ -10,8 +10,10 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Column
+import com.example.fifa2026poolpredictions.data.model.*
 import com.example.fifa2026poolpredictions.theme.MyApplicationTheme
 import com.example.fifa2026poolpredictions.ui.wcresults.GroupCard
+import com.example.fifa2026poolpredictions.ui.wcresults.KnockoutMatchRow
 import org.junit.Rule
 import org.junit.Test
 
@@ -200,6 +202,53 @@ class WcResultsUiTest {
             .first { it.key.name == "FINAL" }.value.first()
         assert(finalMatch.winner.name == "TEAM2") { "Expected France (TEAM2) to win the Final" }
         assert(finalMatch.team2.name == "France") { "Expected France as team2 in the Final" }
+    }
+
+    // ── Knockout match row ET/PK annotation ───────────────────────────────
+
+    private val kTeam1 = Team("k1", "Brazil",  "🇧🇷", 1, 0.0)
+    private val kTeam2 = Team("k2", "Germany", "🇩🇪", 1, 0.0)
+
+    @Test
+    fun knockoutMatchRow_extraTimeWin_showsEtAnnotation() {
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                KnockoutMatchRow(
+                    Match("qf1", "k1", "k2", kTeam1, kTeam2, "2026-07-09", Phase.QF,
+                        MatchResult.TEAM1, 2, 1, extraTime = true)
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("2 – 1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("e.t.", substring = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun knockoutMatchRow_penaltyKicks_showsEtAndPkAnnotation() {
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                KnockoutMatchRow(
+                    Match("sf1", "k1", "k2", kTeam1, kTeam2, "2026-07-14", Phase.SF,
+                        MatchResult.DRAW, 1, 1, extraTime = true, pkTeam1Goals = 4, pkTeam2Goals = 2)
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("1 – 1").assertIsDisplayed()
+        composeTestRule.onNodeWithText("e.t. · p.k. 4–2", substring = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun knockoutMatchRow_normalResult_noEtAnnotation() {
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                KnockoutMatchRow(
+                    Match("f1", "k1", "k2", kTeam1, kTeam2, "2026-07-19", Phase.FINAL,
+                        MatchResult.TEAM2, 1, 3)
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("1 – 3").assertIsDisplayed()
+        composeTestRule.onNodeWithText("e.t.", substring = true).assertDoesNotExist()
     }
 
     @Test

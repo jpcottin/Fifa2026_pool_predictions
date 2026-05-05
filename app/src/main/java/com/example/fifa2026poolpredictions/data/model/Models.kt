@@ -49,6 +49,9 @@ data class Match(
     val team1Goals: Int,
     val team2Goals: Int,
     val note: String? = null,
+    val extraTime: Boolean = false,
+    val pkTeam1Goals: Int? = null,
+    val pkTeam2Goals: Int? = null,
     val createdAt: String = ""
 )
 
@@ -89,7 +92,10 @@ data class UpdateMatchRequest(
     val team2Goals: Int,
     val winner: String,
     val phase: String,
-    val note: String?
+    val note: String?,
+    val extraTime: Boolean = false,
+    val pkTeam1Goals: Int? = null,
+    val pkTeam2Goals: Int? = null
 )
 
 @Serializable
