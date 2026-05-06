@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -150,10 +149,9 @@ fun NewSelectionScreen(
                         onClick = { viewModel.submit() },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         enabled = !state.saving,
-                        colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                     ) {
                         if (state.saving) {
-                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                         } else {
                             Text("Save Selection", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         }

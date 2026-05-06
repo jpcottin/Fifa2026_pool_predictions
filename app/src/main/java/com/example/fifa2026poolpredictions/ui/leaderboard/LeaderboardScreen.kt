@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -107,13 +106,12 @@ fun LeaderboardContent(
                     color = AppGreenDark
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val activeColors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                     if (state.showMineOnly) {
-                        Button(onClick = onToggleMine, colors = activeColors) { Text("Mine") }
+                        Button(onClick = onToggleMine) { Text("Mine") }
                         OutlinedButton(onClick = onToggleMine) { Text("All") }
                     } else {
                         OutlinedButton(onClick = onToggleMine) { Text("Mine") }
-                        Button(onClick = onToggleMine, colors = activeColors) { Text("All") }
+                        Button(onClick = onToggleMine) { Text("All") }
                     }
                 }
             }

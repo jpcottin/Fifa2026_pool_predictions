@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -121,7 +120,6 @@ fun SelectionsContent(
                 Button(
                     onClick = onAddNew,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                 ) {
                     Text("+ New Selection", fontWeight = FontWeight.Bold)
                 }

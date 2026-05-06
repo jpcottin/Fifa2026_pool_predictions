@@ -101,7 +101,6 @@ fun HomeContent(state: HomeUiState, onPickTeams: () -> Unit, modifier: Modifier 
                     Button(
                         onClick = onPickTeams,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                     ) {
                         Text("Pick My 8 Teams →", fontSize = 16.sp)
                     }

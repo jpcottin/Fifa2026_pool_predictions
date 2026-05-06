@@ -153,7 +153,6 @@ private fun BracketTabView(knockoutByPhase: Map<Phase, List<Match>>) {
         PrimaryScrollableTabRow(
             selectedTabIndex = selectedIndex,
             containerColor = Color.Transparent,
-            contentColor = AppGreen,
             edgePadding = 0.dp,
         ) {
             phases.forEachIndexed { index, phase ->
