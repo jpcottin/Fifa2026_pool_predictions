@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -64,7 +63,6 @@ fun WcResultsScreen(viewModel: WcResultsViewModel, modifier: Modifier = Modifier
                         Text(
                             text = "WC Results",
                             style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
                             color = AppGreenDark,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
@@ -79,7 +77,6 @@ fun WcResultsScreen(viewModel: WcResultsViewModel, modifier: Modifier = Modifier
                             Text(
                                 text = "Knockout Stage",
                                 style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
                                 color = AppGreenDark,
                                 modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                             )
@@ -108,8 +105,7 @@ fun GroupCard(group: GroupData) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Group ${group.letter}",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleMedium,
                 color = Color.Black,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
@@ -119,13 +115,13 @@ fun GroupCard(group: GroupData) {
                 modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Team", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Gray400, modifier = Modifier.weight(1f))
-                Text("P", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Gray400, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
-                Text("W", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Gray400, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
-                Text("D", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Gray400, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
-                Text("L", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Gray400, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
-                Text("GD", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Gray400, modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
-                Text("Pts", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Gray400, modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
+                Text("Team", style = MaterialTheme.typography.labelMedium, color = Gray400, modifier = Modifier.weight(1f))
+                Text("P", style = MaterialTheme.typography.labelMedium, color = Gray400, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
+                Text("W", style = MaterialTheme.typography.labelMedium, color = Gray400, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
+                Text("D", style = MaterialTheme.typography.labelMedium, color = Gray400, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
+                Text("L", style = MaterialTheme.typography.labelMedium, color = Gray400, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
+                Text("GD", style = MaterialTheme.typography.labelMedium, color = Gray400, modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
+                Text("Pts", style = MaterialTheme.typography.labelMedium, color = Gray400, modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
             }
             HorizontalDivider(color = Gray200)
 
@@ -146,15 +142,15 @@ fun GroupCard(group: GroupData) {
                     Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                         Text(standing.team.flagEmoji, fontSize = 14.sp)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(standing.team.name, fontSize = 14.sp, color = Color.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(standing.team.name, style = MaterialTheme.typography.bodyMedium, color = Color.Black, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
-                    Text(standing.p.toString(), fontSize = 14.sp, color = Gray500, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
-                    Text(standing.w.toString(), fontSize = 14.sp, color = Gray500, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
-                    Text(standing.d.toString(), fontSize = 14.sp, color = Gray500, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
-                    Text(standing.l.toString(), fontSize = 14.sp, color = Gray500, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
+                    Text(standing.p.toString(), style = MaterialTheme.typography.bodyMedium, color = Gray500, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
+                    Text(standing.w.toString(), style = MaterialTheme.typography.bodyMedium, color = Gray500, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
+                    Text(standing.d.toString(), style = MaterialTheme.typography.bodyMedium, color = Gray500, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
+                    Text(standing.l.toString(), style = MaterialTheme.typography.bodyMedium, color = Gray500, modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
                     val gdStr = if (standing.gd > 0) "+${standing.gd}" else standing.gd.toString()
-                    Text(gdStr, fontSize = 14.sp, color = Gray500, modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
-                    Text(standing.pts.toString(), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black, modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
+                    Text(gdStr, style = MaterialTheme.typography.bodyMedium, color = Gray500, modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
+                    Text(standing.pts.toString(), style = MaterialTheme.typography.titleSmall, color = Color.Black, modifier = Modifier.width(32.dp), textAlign = TextAlign.Center)
                 }
                 if (index < group.sortedStandings.size - 1) {
                     HorizontalDivider(color = Gray200)
@@ -168,12 +164,12 @@ fun GroupCard(group: GroupData) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(modifier = Modifier.size(10.dp).background(AppGreenLight, RoundedCornerShape(2.dp)).border(1.dp, AppGreenBorder, RoundedCornerShape(2.dp)))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Advances", fontSize = 12.sp, color = Gray400)
+                    Text("Advances", style = MaterialTheme.typography.bodySmall, color = Gray400)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(modifier = Modifier.size(10.dp).background(YellowLight, RoundedCornerShape(2.dp)).border(1.dp, Yellow, RoundedCornerShape(2.dp)))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("May advance", fontSize = 12.sp, color = Gray400)
+                    Text("May advance", style = MaterialTheme.typography.bodySmall, color = Gray400)
                 }
             }
 
@@ -208,13 +204,11 @@ fun GroupCard(group: GroupData) {
                         Box(modifier = Modifier.widthIn(min = 75.dp).padding(horizontal = 4.dp), contentAlignment = Alignment.Center) {
                             if (match.winner == MatchResult.UPCOMING) {
                                 val dateStr = match.date?.take(10) ?: "TBD"
-                                Text(dateStr, fontSize = 12.sp, color = Gray400, maxLines = 1, softWrap = false)
+                                Text(dateStr, style = MaterialTheme.typography.bodySmall, color = Gray400, maxLines = 1, softWrap = false)
                             } else {
                                 Text(
                                     "${match.team1Goals} – ${match.team2Goals}",
-                                    fontSize = 16.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
+                                    style = ScoreTextStyle,
                                     color = Color.Black,
                                     maxLines = 1,
                                     softWrap = false
@@ -243,7 +237,7 @@ fun GroupCard(group: GroupData) {
                                     .background(Gray100, RoundedCornerShape(16.dp))
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
-                                Text("Draw", fontSize = 10.sp, color = Gray600)
+                                Text("Draw", style = MaterialTheme.typography.labelSmall, color = Gray600)
                             }
                         }
                     }
@@ -294,7 +288,7 @@ fun KnockoutMatchRow(match: Match) {
             )
             Text(
                 text = formatMatchDate(match.date),
-                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = Gray400
             )
         } else {
@@ -311,13 +305,11 @@ fun KnockoutMatchRow(match: Match) {
             }
             Column(modifier = Modifier.widthIn(min = 75.dp).padding(horizontal = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 if (match.winner == MatchResult.UPCOMING) {
-                    Text(formatMatchDate(match.date), fontSize = 12.sp, color = Gray400, maxLines = 1, softWrap = false)
+                    Text(formatMatchDate(match.date), style = MaterialTheme.typography.bodySmall, color = Gray400, maxLines = 1, softWrap = false)
                 } else {
                     Text(
                         "${match.team1Goals} – ${match.team2Goals}",
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Bold,
+                        style = ScoreTextStyle,
                         color = Color.Black,
                         maxLines = 1,
                         softWrap = false
@@ -353,7 +345,7 @@ fun KnockoutMatchRow(match: Match) {
                         .background(Gray100, RoundedCornerShape(16.dp))
                         .padding(horizontal = 6.dp, vertical = 2.dp)
                 ) {
-                    Text("Draw", fontSize = 10.sp, color = Gray600)
+                    Text("Draw", style = MaterialTheme.typography.labelSmall, color = Gray600)
                 }
             }
         }
@@ -392,7 +384,6 @@ fun WcResultsRichPreview() {
                     Text(
                         text = "WC Results",
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
                         color = AppGreenDark
                     )
                 }

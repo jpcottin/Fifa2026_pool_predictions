@@ -73,7 +73,6 @@ fun MatchesList(sections: List<MatchSection>, modifier: Modifier = Modifier) {
             Text(
                 "Matches",
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
                 color = AppGreenDark,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
@@ -252,8 +251,7 @@ fun MatchBadge(match: Match) {
     ) {
         Text(
             text = text as String,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.labelSmall,
             color = textColor as Color,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

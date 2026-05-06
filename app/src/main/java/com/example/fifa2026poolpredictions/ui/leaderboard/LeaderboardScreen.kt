@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -238,8 +237,7 @@ fun RankDisplay(rank: Int, modifier: Modifier = Modifier) {
     }
     Text(
         text = medal,
-        fontSize = 22.sp,
-        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.titleLarge,
         color = Gray500,
         textAlign = TextAlign.Center,
         modifier = modifier
@@ -250,8 +248,8 @@ fun RankDisplay(rank: Int, modifier: Modifier = Modifier) {
 fun NameDisplay(name: String, expanded: Boolean) {
     Text(
         text = name,
+        style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
         color = Gray900,
         maxLines = if (expanded) Int.MAX_VALUE else 1,
         overflow = TextOverflow.Ellipsis
@@ -262,7 +260,7 @@ fun NameDisplay(name: String, expanded: Boolean) {
 fun UserNameDisplay(name: String) {
     Text(
         text = name,
-        fontSize = 14.sp,
+        style = MaterialTheme.typography.bodyMedium,
         color = Gray600,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
@@ -292,9 +290,7 @@ fun ScoreDisplay(score: Double) {
     ) {
         Text(
             text = "%.1f".format(score),
-            fontSize = 16.sp,
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Black,
+            style = ScoreBadgeTextStyle,
             color = AppGreenDark
         )
     }
@@ -308,7 +304,7 @@ fun MatchStatCard(label: String, value: Int, valueColor: Color, modifier: Modifi
         border = BorderStroke(1.dp, Gray200)
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-            Text(text = label, fontSize = 12.sp, color = Gray500)
+            Text(text = label, style = MaterialTheme.typography.bodySmall, color = Gray500)
             Text(text = value.toString(), fontSize = 30.sp, fontWeight = FontWeight.Bold, color = valueColor)
         }
     }

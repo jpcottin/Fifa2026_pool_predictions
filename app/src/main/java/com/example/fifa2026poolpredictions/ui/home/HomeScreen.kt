@@ -69,7 +69,6 @@ fun HomeContent(state: HomeUiState, onPickTeams: () -> Unit, modifier: Modifier 
                     Text(
                         text = "⚽ FIFA World Cup 2026",
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
                         color = AppGreenDark,
                         textAlign = TextAlign.Center
                     )
@@ -155,8 +154,7 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
         ) {
             Text(
                 text = value,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
                 color = AppGreen
             )
             Text(
@@ -180,7 +178,6 @@ private fun HowItWorksCard() {
             Text(
                 text = "How It Works",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
                 color = Color.Black
             )
             HowItWorksStep(
@@ -239,7 +236,7 @@ private fun HowItWorksStep(
             Text(number, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = AppGreenDark)
         }
         Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
-            Text(title, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppGreenDark)
+            Text(title, style = MaterialTheme.typography.titleSmall, color = AppGreenDark)
             if (body != null) {
                 Text(body, fontSize = 13.sp, color = Gray700)
             }

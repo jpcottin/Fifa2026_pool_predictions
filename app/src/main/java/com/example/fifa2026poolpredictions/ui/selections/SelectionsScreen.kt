@@ -105,9 +105,9 @@ fun SelectionsContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
                 Text("My Picks", style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold, color = AppGreenDark)
+                    color = AppGreenDark)
                 if (!state.canAddMore && state.mySelections.size < 3 && state.gameState?.state != "PREPARING") {
-                    Text("Submissions closed", fontSize = 12.sp, color = Gray400)
+                    Text("Submissions closed", style = MaterialTheme.typography.bodySmall, color = Gray400)
                 }
             }
         }
@@ -192,9 +192,7 @@ fun MySelectionCard(item: MySelection, modifier: Modifier = Modifier) {
                 ) {
                     Text(
                         text = "%.1f".format(item.selection.score),
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Black,
+                        style = ScoreBadgeTextStyle,
                         color = AppGreenDark
                     )
                 }
@@ -220,7 +218,7 @@ fun MySelectionCard(item: MySelection, modifier: Modifier = Modifier) {
                     row.forEach { team ->
                         Text(
                             text = team.name,
-                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.bodySmall,
                             color = Gray500,
                             modifier = Modifier.weight(1f),
                             maxLines = 1,
@@ -295,8 +293,7 @@ private fun SetCard(setNumber: Int, teams: List<Team>, modifier: Modifier = Modi
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
                 text = "Set $setNumber",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.titleSmall,
                 color = AppGreenDark,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
