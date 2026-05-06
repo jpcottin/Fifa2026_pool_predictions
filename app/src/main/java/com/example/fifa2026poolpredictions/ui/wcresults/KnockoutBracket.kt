@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -42,15 +43,15 @@ import com.example.fifa2026poolpredictions.data.model.Phase
 import kotlin.math.min
 
 // ── Layout constants (dp, unscaled) ──────────────────────────────────────────
-private const val SLOT_H   = 64f
-private const val CARD_H   = 46f
+private const val SLOT_H   = 80f
+private const val CARD_H   = 60f
 private const val CARD_W   = 180f
 private const val CONN_W   = 24f
 private const val HEADER_H = 48f
 private const val PAD      = 12f
 private const val CHAMP_W  = 108f
 private const val CHAMP_H  = 68f
-private const val TOTAL_H  = HEADER_H + 16 * SLOT_H          // 1072 dp
+private const val TOTAL_H  = HEADER_H + 16 * SLOT_H          // 1328 dp
 private const val TOTAL_W  = PAD + 5 * (CARD_W + CONN_W) + CHAMP_W + PAD  // 1142 dp
 
 private val LINE_COLOR = Color(0xFFD1D5DB)
@@ -337,7 +338,8 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
     Box(
         modifier = Modifier
             .size(cardW, cardH)
-            .background(if (match != null) Color.White else Color(0xFFF9FAFB), RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(4.dp))
+            .background(if (match != null) Color.White else Color(0xFFF9FAFB))
             .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(4.dp)),
     ) {
         if (match == null) {
