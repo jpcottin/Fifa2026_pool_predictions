@@ -1,7 +1,10 @@
 package com.example.fifa2026poolpredictions
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -9,10 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Column
 import com.example.fifa2026poolpredictions.data.model.*
 import com.example.fifa2026poolpredictions.theme.MyApplicationTheme
 import com.example.fifa2026poolpredictions.ui.wcresults.GroupCard
+import com.example.fifa2026poolpredictions.ui.wcresults.KnockoutBracket
 import com.example.fifa2026poolpredictions.ui.wcresults.KnockoutMatchRow
 import org.junit.Rule
 import org.junit.Test
@@ -256,5 +259,48 @@ class WcResultsUiTest {
         val state = TestFixtures.wcResultsStateMid()
         val anyPlayed = state.knockoutByPhase.values.flatten().any { it.winner.name != "UPCOMING" }
         assert(!anyPlayed) { "All knockout matches should be upcoming in mid scenario" }
+    }
+
+    // ── Bracket canvas view ET/PK annotation (tablet / wide layout) ───────
+
+    @Test
+    fun bracketCanvasView_extraTimeWin_showsEtAnnotation() {
+        val t1 = Team("t1", "France", "🇫🇷", 1, 0.0)
+        val t2 = Team("t2", "Argentina", "🇦🇷", 1, 0.0)
+        val finalMatch = Match(
+            id = "final1", team1Id = "t1", team2Id = "t2",
+            team1 = t1, team2 = t2, date = "2026-07-19", phase = Phase.FINAL,
+            winner = MatchResult.TEAM1, team1Goals = 2, team2Goals = 1,
+            note = "Winner Match 101 vs Winner Match 102", extraTime = true
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                Box(Modifier.requiredWidth(700.dp)) {
+                    KnockoutBracket(knockoutByPhase = mapOf(Phase.FINAL to listOf(finalMatch)))
+                }
+            }
+        }
+        composeTestRule.onNodeWithText("e.t.", substring = true).assertExists()
+    }
+
+    @Test
+    fun bracketCanvasView_penaltyKicks_showsEtAndPkAnnotation() {
+        val t1 = Team("t1", "France", "🇫🇷", 1, 0.0)
+        val t2 = Team("t2", "Argentina", "🇦🇷", 1, 0.0)
+        val finalMatch = Match(
+            id = "final1", team1Id = "t1", team2Id = "t2",
+            team1 = t1, team2 = t2, date = "2026-07-19", phase = Phase.FINAL,
+            winner = MatchResult.DRAW, team1Goals = 1, team2Goals = 1,
+            note = "Winner Match 101 vs Winner Match 102",
+            extraTime = true, pkTeam1Goals = 5, pkTeam2Goals = 4
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                Box(Modifier.requiredWidth(700.dp)) {
+                    KnockoutBracket(knockoutByPhase = mapOf(Phase.FINAL to listOf(finalMatch)))
+                }
+            }
+        }
+        composeTestRule.onNodeWithText("e.t. · p.k. 5–4", substring = true).assertExists()
     }
 }

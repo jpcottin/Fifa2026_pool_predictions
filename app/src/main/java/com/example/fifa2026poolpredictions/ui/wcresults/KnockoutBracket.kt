@@ -436,6 +436,19 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
                     )
                 }
             }
+            if (!upcoming && match.extraTime) {
+                val annotation = if (match.pkTeam1Goals != null && match.pkTeam2Goals != null)
+                    "e.t. · p.k. ${match.pkTeam1Goals}–${match.pkTeam2Goals}"
+                else "e.t."
+                Text(
+                    text = annotation,
+                    fontSize = (9 * scale).sp,
+                    fontStyle = FontStyle.Italic,
+                    color = Color(0xFF9CA3AF),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }
