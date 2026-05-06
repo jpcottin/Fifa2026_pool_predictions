@@ -47,7 +47,7 @@ import com.example.fifa2026poolpredictions.data.model.GameState
 import com.example.fifa2026poolpredictions.data.model.Selection
 import com.example.fifa2026poolpredictions.data.model.SelectionUser
 import com.example.fifa2026poolpredictions.data.model.Team
-import com.example.fifa2026poolpredictions.theme.MyApplicationTheme
+import com.example.fifa2026poolpredictions.theme.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -99,16 +99,16 @@ fun SelectionsContent(
     modifier: Modifier = Modifier
 ) {
     val deadline = 1781204400000L // June 11 2026 19:00 UTC (noon PDT)
-    
+
     LazyColumn(modifier = modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         item {
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {
                 Text("My Picks", style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold, color = Color(0xFF166534)) // green-800
+                    fontWeight = FontWeight.Bold, color = AppGreenDark)
                 if (!state.canAddMore && state.mySelections.size < 3 && state.gameState?.state != "PREPARING") {
-                    Text("Submissions closed", fontSize = 12.sp, color = Color(0xFF9CA3AF)) // gray-400
+                    Text("Submissions closed", fontSize = 12.sp, color = Gray400)
                 }
             }
         }
@@ -121,20 +121,20 @@ fun SelectionsContent(
                 Button(
                     onClick = onAddNew,
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF15803D)) // green-700
+                    colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                 ) {
                     Text("+ New Selection", fontWeight = FontWeight.Bold)
                 }
             }
         }
-        
+
         if (state.mySelections.isEmpty()) {
             item {
                 Text(
                     text = "You haven't made any picks yet.",
                     modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
                     textAlign = TextAlign.Center,
-                    color = Color(0xFF6B7280) // gray-500
+                    color = Gray500
                 )
             }
         } else {
@@ -142,7 +142,7 @@ fun SelectionsContent(
                 MySelectionCard(item = item, modifier = Modifier.padding(vertical = 6.dp))
             }
         }
-        
+
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -154,7 +154,7 @@ fun MySelectionCard(item: MySelection, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE5E7EB)) // gray-200
+        border = BorderStroke(1.dp, Gray200)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -173,22 +173,22 @@ fun MySelectionCard(item: MySelection, modifier: Modifier = Modifier) {
                         text = medal,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF9CA3AF), // gray-400
+                        color = Gray400,
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Text(
-                        text = item.selection.name, 
+                        text = item.selection.name,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF111827) // gray-900
+                        color = Gray900
                     )
                 }
-                
+
                 // Score Badge
                 Box(
                     modifier = Modifier
-                        .background(Color(0xFFDCFCE7), RoundedCornerShape(8.dp)) // green-100
-                        .border(1.dp, Color(0xFF4ADE80), RoundedCornerShape(8.dp)) // green-400
+                        .background(AppGreenLight, RoundedCornerShape(8.dp))
+                        .border(1.dp, AppGreenBright, RoundedCornerShape(8.dp))
                         .padding(horizontal = 10.dp, vertical = 4.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -197,21 +197,21 @@ fun MySelectionCard(item: MySelection, modifier: Modifier = Modifier) {
                         fontSize = 16.sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Black,
-                        color = Color(0xFF166534) // green-800
+                        color = AppGreenDark
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // Flags
             Text(
                 text = item.teams.joinToString(" ") { it.flagEmoji },
                 fontSize = 28.sp,
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Team Names Matrix
             val chunkedTeams = item.teams.chunked(4)
             chunkedTeams.forEach { row ->
@@ -221,9 +221,9 @@ fun MySelectionCard(item: MySelection, modifier: Modifier = Modifier) {
                 ) {
                     row.forEach { team ->
                         Text(
-                            text = team.name, 
+                            text = team.name,
                             fontSize = 12.sp,
-                            color = Color(0xFF6B7280), // gray-500
+                            color = Gray500,
                             modifier = Modifier.weight(1f),
                             maxLines = 1,
                             softWrap = false
@@ -252,7 +252,7 @@ fun SetsContent(teams: List<Team>, modifier: Modifier = Modifier) {
             Text(
                 text = "Team data unavailable.\nPull down to refresh.",
                 textAlign = TextAlign.Center,
-                color = Color(0xFF6B7280),
+                color = Gray500,
                 modifier = Modifier.padding(32.dp)
             )
         }
@@ -292,14 +292,14 @@ private fun SetCard(setNumber: Int, teams: List<Team>, modifier: Modifier = Modi
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE5E7EB))
+        border = BorderStroke(1.dp, Gray200)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
                 text = "Set $setNumber",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
-                color = Color(0xFF166534),
+                color = AppGreenDark,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             teams.forEach { team ->
@@ -313,19 +313,19 @@ private fun SetCard(setNumber: Int, teams: List<Team>, modifier: Modifier = Modi
                         text = team.name,
                         fontSize = 13.sp,
                         modifier = Modifier.weight(1f),
-                        color = Color(0xFF374151)
+                        color = Gray700
                     )
                     Box(
                         modifier = Modifier
-                            .background(Color(0xFFF0FDF4), RoundedCornerShape(4.dp))
-                            .border(1.dp, Color(0xFF86EFAC), RoundedCornerShape(4.dp))
+                            .background(AppGreenSurface, RoundedCornerShape(4.dp))
+                            .border(1.dp, AppGreenBorder, RoundedCornerShape(4.dp))
                             .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = "%.1f".format(team.score),
                             fontSize = 12.sp,
                             fontFamily = FontFamily.Monospace,
-                            color = Color(0xFF15803D)
+                            color = AppGreen
                         )
                     }
                 }

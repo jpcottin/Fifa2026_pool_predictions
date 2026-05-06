@@ -43,7 +43,7 @@ import com.example.fifa2026poolpredictions.data.model.Match
 import com.example.fifa2026poolpredictions.data.model.MatchResult
 import com.example.fifa2026poolpredictions.data.model.Phase
 import com.example.fifa2026poolpredictions.data.model.Team
-import com.example.fifa2026poolpredictions.theme.MyApplicationTheme
+import com.example.fifa2026poolpredictions.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,32 +71,32 @@ fun MatchesList(sections: List<MatchSection>, modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         item {
             Text(
-                "Matches", 
+                "Matches",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF166534), // green-800
+                color = AppGreenDark,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
         }
-        
+
         if (sections.isEmpty()) {
             item {
                 Text(
                     text = "No matches recorded yet.",
                     modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
                     textAlign = TextAlign.Center,
-                    color = Color(0xFF6B7280) // gray-500
+                    color = Gray500
                 )
             }
         }
-        
+
         sections.forEach { section ->
             item {
                 Text(
                     section.phase.displayName.uppercase(),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF6B7280), // gray-500
+                    color = Gray500,
                     letterSpacing = 1.sp,
                     modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                 )
@@ -105,7 +105,7 @@ fun MatchesList(sections: List<MatchSection>, modifier: Modifier = Modifier) {
                 MatchRow(match = match, modifier = Modifier.padding(vertical = 4.dp))
             }
         }
-        
+
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -120,7 +120,7 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE5E7EB)) // gray-200
+        border = BorderStroke(1.dp, Gray200)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -133,7 +133,7 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                     Text(
                         text = noteText,
                         fontSize = 14.sp,
-                        color = Color(0xFF9CA3AF), // gray-400
+                        color = Gray400,
                         fontStyle = FontStyle.Italic
                     )
                 }
@@ -142,18 +142,18 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                     Text(
                         text = dateStr,
                         fontSize = 12.sp,
-                        color = Color(0xFF9CA3AF) // gray-400
+                        color = Gray400
                     )
                 }
             } else {
                 // Team 1
                 Row(
-                    modifier = Modifier.weight(1f), 
+                    modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = match.team1.name, 
+                        text = match.team1.name,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black,
@@ -162,11 +162,11 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = match.team1.flagEmoji, 
+                        text = match.team1.flagEmoji,
                         fontSize = 20.sp
                     )
                 }
-                
+
                 // Score / Date
                 Column(
                     modifier = Modifier.padding(horizontal = 8.dp).widthIn(min = 75.dp),
@@ -189,35 +189,35 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                             Text(
                                 text = annotation,
                                 fontSize = 10.sp,
-                                color = Color(0xFF9CA3AF),
+                                color = Gray400,
                                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                             )
                         }
                     } else {
                         val dateStr = match.date?.take(10) ?: "TBD"
                         Text(
-                            text = dateStr, 
+                            text = dateStr,
                             fontSize = 12.sp,
-                            color = Color(0xFF9CA3AF), // gray-400
+                            color = Gray400,
                             maxLines = 1,
                             softWrap = false
                         )
                     }
                 }
-                
+
                 // Team 2
                 Row(
-                    modifier = Modifier.weight(1f), 
+                    modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Text(
-                        text = match.team2.flagEmoji, 
+                        text = match.team2.flagEmoji,
                         fontSize = 20.sp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = match.team2.name, 
+                        text = match.team2.name,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black,
@@ -225,7 +225,7 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                
+
                 // Badge
                 Spacer(modifier = Modifier.width(8.dp))
                 MatchBadge(match = match)
@@ -237,12 +237,12 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
 @Composable
 fun MatchBadge(match: Match) {
     val (text, bgColor, textColor, borderColor) = when (match.winner) {
-        MatchResult.UPCOMING -> listOf("Upcoming", Color(0xFFF3F4F6), Color(0xFF4B5563), Color(0xFFE5E7EB)) // gray
-        MatchResult.TEAM1 -> listOf(match.team1.name, Color(0xFF111827), Color.White, Color(0xFF111827)) // black
-        MatchResult.TEAM2 -> listOf(match.team2.name, Color(0xFF111827), Color.White, Color(0xFF111827)) // black
-        MatchResult.DRAW -> listOf("Draw", Color(0xFF111827), Color.White, Color(0xFF111827)) // black
+        MatchResult.UPCOMING -> listOf("Upcoming", Gray100, Gray600, Gray200)
+        MatchResult.TEAM1 -> listOf(match.team1.name, Gray900, Color.White, Gray900)
+        MatchResult.TEAM2 -> listOf(match.team2.name, Gray900, Color.White, Gray900)
+        MatchResult.DRAW -> listOf("Draw", Gray900, Color.White, Gray900)
     }
-    
+
     Box(
         modifier = Modifier
             .background(bgColor as Color, RoundedCornerShape(16.dp))
@@ -278,7 +278,7 @@ fun MatchesListPreview() {
         Match("m2", t3.id, t4.id, t3, t4, "2026-06-12T12:00:00Z", Phase.GROUP, MatchResult.UPCOMING, 0, 0),
         Match("m3", t5.id, t6.id, t5, t6, "2026-06-12T18:00:00Z", Phase.GROUP, MatchResult.DRAW, 1, 1)
     )
-    
+
     val r16Matches = listOf(
         Match("m4", t1.id, t3.id, t1, t3, "2026-07-04T12:00:00Z", Phase.R16, MatchResult.UPCOMING, 0, 0, note = "Winner Match 1 vs Winner Match 3")
     )

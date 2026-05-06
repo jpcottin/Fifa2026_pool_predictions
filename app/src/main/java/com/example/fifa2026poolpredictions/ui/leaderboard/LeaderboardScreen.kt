@@ -49,7 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fifa2026poolpredictions.data.model.Selection
 import com.example.fifa2026poolpredictions.data.model.SelectionUser
 import com.example.fifa2026poolpredictions.data.model.Team
-import com.example.fifa2026poolpredictions.theme.MyApplicationTheme
+import com.example.fifa2026poolpredictions.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,10 +104,10 @@ fun LeaderboardContent(
                     text = title,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF166534) // green-800
+                    color = AppGreenDark
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val activeColors = ButtonDefaults.buttonColors(containerColor = Color(0xFF15803D)) // green-700
+                    val activeColors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                     if (state.showMineOnly) {
                         Button(onClick = onToggleMine, colors = activeColors) { Text("Mine") }
                         OutlinedButton(onClick = onToggleMine) { Text("All") }
@@ -130,25 +130,25 @@ fun LeaderboardContent(
                 MatchStatCard(
                     label = "Matches Played",
                     value = state.matchesPlayed,
-                    valueColor = Color(0xFF15803D), // green-700
+                    valueColor = AppGreen,
                     modifier = Modifier.weight(1f)
                 )
                 MatchStatCard(
                     label = "Matches to Go",
                     value = state.matchesUpcoming,
-                    valueColor = Color(0xFF9CA3AF), // gray-400
+                    valueColor = Gray400,
                     modifier = Modifier.weight(1f)
                 )
             }
         }
-        
+
         if (state.ranked.isEmpty()) {
             item {
                 Text(
                     text = "No selections yet.",
                     modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
                     textAlign = TextAlign.Center,
-                    color = Color(0xFF6B7280) // gray-500
+                    color = Gray500
                 )
             }
         } else {
@@ -168,11 +168,11 @@ fun SelectionRow(item: RankedSelection, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .clickable { expanded = !expanded },
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, if (expanded) Color(0xFF4ADE80) else Color(0xFFE5E7EB)) // green-400 or gray-200
+        border = BorderStroke(1.dp, if (expanded) AppGreenBright else Gray200)
     ) {
         BoxWithConstraints {
             val isWide = maxWidth > 600.dp
-            
+
             if (isWide) {
                 // Wide/Adaptive Layout for Tablets or Landscape
                 Row(
@@ -181,17 +181,17 @@ fun SelectionRow(item: RankedSelection, modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     RankDisplay(item.rank, Modifier.width(48.dp))
-                    
+
                     Column(modifier = Modifier.weight(1.5f)) {
                         NameDisplay(item.selection.name, expanded = true) // Always expanded on wide screens
                     }
-                    
+
                     Column(modifier = Modifier.weight(1f)) {
                         UserNameDisplay(item.selection.user?.name ?: "")
                     }
-                    
+
                     FlagsDisplay(item.teams, fontSize = 20.sp, modifier = Modifier.weight(1.5f))
-                    
+
                     ScoreDisplay(item.selection.score)
                 }
             } else {
@@ -202,18 +202,18 @@ fun SelectionRow(item: RankedSelection, modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     RankDisplay(item.rank, Modifier.width(36.dp).padding(top = 4.dp))
-                    
+
                     Column(modifier = Modifier.weight(1f)) {
                         NameDisplay(item.selection.name, expanded)
                         Spacer(modifier = Modifier.height(2.dp))
                         UserNameDisplay(item.selection.user?.name ?: "")
-                        
+
                         if (expanded) {
                             Spacer(modifier = Modifier.height(8.dp))
                             FlagsDisplay(item.teams, fontSize = 18.sp)
                         }
                     }
-                    
+
                     Column(
                         horizontalAlignment = Alignment.End,
                         verticalArrangement = Arrangement.Top
@@ -222,7 +222,7 @@ fun SelectionRow(item: RankedSelection, modifier: Modifier = Modifier) {
                         if (!expanded) {
                             Spacer(modifier = Modifier.height(8.dp))
                             FlagsDisplay(
-                                teams = item.teams, 
+                                teams = item.teams,
                                 fontSize = 12.sp
                             )
                         }
@@ -242,7 +242,7 @@ fun RankDisplay(rank: Int, modifier: Modifier = Modifier) {
         text = medal,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
-        color = Color(0xFF6B7280), // gray-500
+        color = Gray500,
         textAlign = TextAlign.Center,
         modifier = modifier
     )
@@ -254,7 +254,7 @@ fun NameDisplay(name: String, expanded: Boolean) {
         text = name,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        color = Color(0xFF111827), // gray-900
+        color = Gray900,
         maxLines = if (expanded) Int.MAX_VALUE else 1,
         overflow = TextOverflow.Ellipsis
     )
@@ -265,7 +265,7 @@ fun UserNameDisplay(name: String) {
     Text(
         text = name,
         fontSize = 14.sp,
-        color = Color(0xFF4B5563), // gray-600
+        color = Gray600,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
@@ -287,8 +287,8 @@ fun FlagsDisplay(teams: List<Team>, fontSize: TextUnit, modifier: Modifier = Mod
 fun ScoreDisplay(score: Double) {
     Box(
         modifier = Modifier
-            .background(Color(0xFFDCFCE7), RoundedCornerShape(8.dp)) // green-100
-            .border(1.dp, Color(0xFF4ADE80), RoundedCornerShape(8.dp)) // green-400
+            .background(AppGreenLight, RoundedCornerShape(8.dp))
+            .border(1.dp, AppGreenBright, RoundedCornerShape(8.dp))
             .padding(horizontal = 10.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -297,7 +297,7 @@ fun ScoreDisplay(score: Double) {
             fontSize = 16.sp,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.Black,
-            color = Color(0xFF166534) // green-800
+            color = AppGreenDark
         )
     }
 }
@@ -307,10 +307,10 @@ fun MatchStatCard(label: String, value: Int, valueColor: Color, modifier: Modifi
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE5E7EB))
+        border = BorderStroke(1.dp, Gray200)
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-            Text(text = label, fontSize = 12.sp, color = Color(0xFF6B7280))
+            Text(text = label, fontSize = 12.sp, color = Gray500)
             Text(text = value.toString(), fontSize = 30.sp, fontWeight = FontWeight.Bold, color = valueColor)
         }
     }
@@ -329,7 +329,7 @@ fun LeaderboardContentCompactPreview() {
         Team("7", "Spain", "🇪🇸", 7, 0.0),
         Team("8", "England", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", 8, 0.0)
     )
-    
+
     val rankedSelections = listOf(
         RankedSelection(
             Selection("s1", "Champs 2026", "u1", mockTeams.map { it.id }, 125.5, user = SelectionUser("Didier", null, null)),
@@ -378,7 +378,7 @@ fun LeaderboardContentWidePreview() {
         Team("7", "Spain", "🇪🇸", 7, 0.0),
         Team("8", "England", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", 8, 0.0)
     )
-    
+
     val rankedSelections = (1..15).map { i ->
         RankedSelection(
             Selection("s$i", "Selection #$i", "u$i", mockTeams.map { it.id }, 150.0 - i, user = SelectionUser("User $i", null, null)),

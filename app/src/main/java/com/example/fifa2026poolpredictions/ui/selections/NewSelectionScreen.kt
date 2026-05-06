@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.fifa2026poolpredictions.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +62,7 @@ fun NewSelectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("New Selection", color = Color(0xFF166534), fontWeight = FontWeight.Bold) },
+                title = { Text("New Selection", color = AppGreenDark, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -103,15 +104,15 @@ fun NewSelectionScreen(
                             text = "Set $setNum",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = if (isMissing) MaterialTheme.colorScheme.error else Color(0xFF166534)
+                            color = if (isMissing) MaterialTheme.colorScheme.error else AppGreenDark
                         )
                         Text(
                             text = if (isMissing) "Required: Please pick a team" else "Pick one team from this group",
                             style = MaterialTheme.typography.bodySmall,
-                            color = if (isMissing) MaterialTheme.colorScheme.error else Color(0xFF6B7280)
+                            color = if (isMissing) MaterialTheme.colorScheme.error else Gray500
                         )
                     }
-                    
+
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         teams.chunked(2).forEach { rowTeams ->
                             Row(
@@ -144,12 +145,12 @@ fun NewSelectionScreen(
                             textAlign = TextAlign.Center
                         )
                     }
-                    
+
                     Button(
                         onClick = { viewModel.submit() },
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         enabled = !state.saving,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF15803D)) // green-700
+                        colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                     ) {
                         if (state.saving) {
                             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
@@ -173,11 +174,11 @@ fun TeamPickCard(
     Card(
         modifier = modifier.clickable { onClick() },
         colors = CardDefaults.cardColors(
-            containerColor = if (selected) Color(0xFFF0FDF4) else Color.White // green-50 or white
+            containerColor = if (selected) AppGreenSurface else Color.White
         ),
         border = BorderStroke(
             width = if (selected) 2.dp else 1.dp,
-            color = if (selected) Color(0xFF15803D) else Color(0xFFE5E7EB) // green-700 or gray-200
+            color = if (selected) AppGreen else Gray200
         )
     ) {
         Row(
@@ -190,7 +191,7 @@ fun TeamPickCard(
                 text = team.name,
                 fontSize = 14.sp,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                color = if (selected) Color(0xFF166534) else Color.Black,
+                color = if (selected) AppGreenDark else Color.Black,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

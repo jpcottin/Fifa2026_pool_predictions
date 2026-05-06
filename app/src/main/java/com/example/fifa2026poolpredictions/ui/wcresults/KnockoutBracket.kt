@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fifa2026poolpredictions.data.model.Match
 import com.example.fifa2026poolpredictions.data.model.MatchResult
 import com.example.fifa2026poolpredictions.data.model.Phase
+import com.example.fifa2026poolpredictions.theme.*
 import kotlin.math.min
 
 // ── Layout constants (dp, unscaled) ──────────────────────────────────────────
@@ -54,7 +55,7 @@ private const val CHAMP_H  = 68f
 private const val TOTAL_H  = HEADER_H + 16 * SLOT_H          // 1328 dp
 private const val TOTAL_W  = PAD + 5 * (CARD_W + CONN_W) + CHAMP_W + PAD  // 1142 dp
 
-private val LINE_COLOR = Color(0xFFD1D5DB)
+private val LINE_COLOR = Gray300
 
 // ── Round metadata ────────────────────────────────────────────────────────────
 private val BRACKET_ROUNDS = listOf(Phase.R32, Phase.R16, Phase.QF, Phase.SF, Phase.FINAL)
@@ -152,7 +153,7 @@ private fun BracketTabView(knockoutByPhase: Map<Phase, List<Match>>) {
         PrimaryScrollableTabRow(
             selectedTabIndex = selectedIndex,
             containerColor = Color.Transparent,
-            contentColor = Color(0xFF15803D),
+            contentColor = AppGreen,
             edgePadding = 0.dp,
         ) {
             phases.forEachIndexed { index, phase ->
@@ -260,13 +261,13 @@ private fun BracketCanvasView(byNote: Map<String, Match>, scale: Float) {
                     text = ROUND_LABELS[round] ?: "",
                     fontSize = (11 * scale).sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF4B5563),
+                    color = Gray600,
                     letterSpacing = 0.3.sp,
                 )
                 Text(
                     text = ROUND_DATES[round] ?: "",
                     fontSize = (10 * scale).sp,
-                    color = Color(0xFF9CA3AF),
+                    color = Gray400,
                 )
             }
         }
@@ -288,8 +289,8 @@ private fun BracketCanvasView(byNote: Map<String, Match>, scale: Float) {
             modifier = Modifier
                 .offset(x = (finalRight + connW).dp, y = (centerY - champH / 2).dp)
                 .size(champW.dp, champH.dp)
-                .background(Color(0xFFF0FDF4), RoundedCornerShape(8.dp))
-                .border(1.dp, Color(0xFF86EFAC), RoundedCornerShape(8.dp)),
+                .background(AppGreenSurface, RoundedCornerShape(8.dp))
+                .border(1.dp, AppGreenBorder, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Column(
@@ -303,14 +304,14 @@ private fun BracketCanvasView(byNote: Map<String, Match>, scale: Float) {
                         champion.name,
                         fontSize = (11 * scale).sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF166534),
+                        color = AppGreenDark,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
                 } else {
-                    Text("World Cup", fontSize = (10 * scale).sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF166534))
-                    Text("Champion", fontSize = (10 * scale).sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF166534))
+                    Text("World Cup", fontSize = (10 * scale).sp, fontWeight = FontWeight.SemiBold, color = AppGreenDark)
+                    Text("Champion", fontSize = (10 * scale).sp, fontWeight = FontWeight.SemiBold, color = AppGreenDark)
                 }
             }
         }
@@ -323,7 +324,7 @@ private fun BracketCanvasView(byNote: Map<String, Match>, scale: Float) {
                 .width(cardW.dp),
             fontSize = (10 * scale).sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF6B7280),
+            color = Gray500,
             textAlign = TextAlign.Center,
         )
         Box(modifier = Modifier.offset(x = finalColLeft.dp, y = thirdCardTop.dp)) {
@@ -339,11 +340,11 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
         modifier = Modifier
             .size(cardW, cardH)
             .clip(RoundedCornerShape(4.dp))
-            .background(if (match != null) Color.White else Color(0xFFF9FAFB))
-            .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(4.dp)),
+            .background(if (match != null) Color.White else Gray50)
+            .border(1.dp, Gray200, RoundedCornerShape(4.dp)),
     ) {
         if (match == null) {
-            Text("–", fontSize = (10 * scale).sp, color = Color(0xFFD1D5DB), modifier = Modifier.align(Alignment.Center))
+            Text("–", fontSize = (10 * scale).sp, color = Gray300, modifier = Modifier.align(Alignment.Center))
             return@Box
         }
 
@@ -360,14 +361,14 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
                     text = shortNote(match.note ?: "TBD"),
                     fontSize = (11 * scale).sp,
                     fontStyle = FontStyle.Italic,
-                    color = Color(0xFF6B7280),
+                    color = Gray500,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = formatMatchDate(match.date),
                     fontSize = (10 * scale).sp,
-                    color = Color(0xFF9CA3AF),
+                    color = Gray400,
                     modifier = Modifier.padding(top = 2.dp),
                 )
             }
@@ -391,7 +392,7 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
                     text = match.team1.name,
                     fontSize = (11 * scale).sp,
                     fontWeight = if (w1) FontWeight.SemiBold else FontWeight.Normal,
-                    color = if (w1) Color(0xFF15803D) else Color(0xFF374151),
+                    color = if (w1) AppGreen else Gray700,
                     modifier = Modifier.weight(1f).padding(horizontal = (2 * scale).dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -402,7 +403,7 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
                         fontSize = (11 * scale).sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
-                        color = if (w1) Color(0xFF15803D) else Color(0xFF6B7280),
+                        color = if (w1) AppGreen else Gray500,
                     )
                 }
             }
@@ -411,7 +412,7 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
                 Text(
                     text = formatMatchDate(match.date),
                     fontSize = (10 * scale).sp,
-                    color = Color(0xFF9CA3AF),
+                    color = Gray400,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                 )
@@ -423,7 +424,7 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
                     text = match.team2.name,
                     fontSize = (11 * scale).sp,
                     fontWeight = if (w2) FontWeight.SemiBold else FontWeight.Normal,
-                    color = if (w2) Color(0xFF15803D) else Color(0xFF374151),
+                    color = if (w2) AppGreen else Gray700,
                     modifier = Modifier.weight(1f).padding(horizontal = (2 * scale).dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -434,7 +435,7 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
                         fontSize = (11 * scale).sp,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
-                        color = if (w2) Color(0xFF15803D) else Color(0xFF6B7280),
+                        color = if (w2) AppGreen else Gray500,
                     )
                 }
             }
@@ -446,7 +447,7 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
                     text = annotation,
                     fontSize = (9 * scale).sp,
                     fontStyle = FontStyle.Italic,
-                    color = Color(0xFF9CA3AF),
+                    color = Gray400,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                 )

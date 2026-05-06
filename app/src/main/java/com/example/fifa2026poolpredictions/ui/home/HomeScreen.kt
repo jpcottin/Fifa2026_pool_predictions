@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.fifa2026poolpredictions.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,19 +70,19 @@ fun HomeContent(state: HomeUiState, onPickTeams: () -> Unit, modifier: Modifier 
                         text = "⚽ FIFA World Cup 2026",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF166534),
+                        color = AppGreenDark,
                         textAlign = TextAlign.Center
                     )
                     Text(
-                        text = "Pick Your 8 · Follow Every Match · Win the Bragging Rights",
+                        text = "Pick Your 8 · Follow Every Match · Win the Bragging Rights",
                         fontSize = 14.sp,
-                        color = Color(0xFF6B7280),
+                        color = Gray500,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = if (isPreparing) Color(0xFF166534) else Color(0xFF6B7280)
+                        color = if (isPreparing) AppGreenDark else Gray500
                     ) {
                         Text(
                             text = if (isPreparing) "🟢 Selections Open" else "🔴 Competition in Progress",
@@ -100,7 +101,7 @@ fun HomeContent(state: HomeUiState, onPickTeams: () -> Unit, modifier: Modifier 
                     Button(
                         onClick = onPickTeams,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF15803D))
+                        colors = ButtonDefaults.buttonColors(containerColor = AppGreen)
                     ) {
                         Text("Pick My 8 Teams →", fontSize = 16.sp)
                     }
@@ -147,7 +148,7 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE5E7EB))
+        border = BorderStroke(1.dp, Gray200)
     ) {
         Column(
             modifier = Modifier.padding(12.dp).fillMaxWidth(),
@@ -157,12 +158,12 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
                 text = value,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF15803D)
+                color = AppGreen
             )
             Text(
                 text = label,
                 fontSize = 11.sp,
-                color = Color(0xFF9CA3AF),
+                color = Gray400,
                 textAlign = TextAlign.Center
             )
         }
@@ -174,7 +175,7 @@ private fun HowItWorksCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE5E7EB))
+        border = BorderStroke(1.dp, Gray200)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(
@@ -194,7 +195,7 @@ private fun HowItWorksCard() {
                 body = null
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Each of your teams earns points throughout the tournament:", fontSize = 13.sp, color = Color(0xFF374151))
+                    Text("Each of your teams earns points throughout the tournament:", fontSize = 13.sp, color = Gray700)
                     listOf(
                         "Win: +3 pts",
                         "Draw: +1 pt",
@@ -202,8 +203,8 @@ private fun HowItWorksCard() {
                         "Goals (knockout): +0.5 pts each"
                     ).forEach { line ->
                         Row {
-                            Text("• ", fontSize = 13.sp, color = Color(0xFF374151))
-                            Text(line, fontSize = 13.sp, color = Color(0xFF374151))
+                            Text("• ", fontSize = 13.sp, color = Gray700)
+                            Text(line, fontSize = 13.sp, color = Gray700)
                         }
                     }
                 }
@@ -233,15 +234,15 @@ private fun HowItWorksStep(
         Box(
             modifier = Modifier
                 .size(28.dp)
-                .background(Color(0xFFF0FDF4), RoundedCornerShape(14.dp)),
+                .background(AppGreenSurface, RoundedCornerShape(14.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Text(number, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF166534))
+            Text(number, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = AppGreenDark)
         }
         Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
-            Text(title, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF166534))
+            Text(title, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppGreenDark)
             if (body != null) {
-                Text(body, fontSize = 13.sp, color = Color(0xFF374151))
+                Text(body, fontSize = 13.sp, color = Gray700)
             }
             extra?.invoke()
         }
