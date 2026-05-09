@@ -269,7 +269,8 @@ fun formatMatchDate(dateStr: String?): String {
 
 @Composable
 fun KnockoutMatchRow(match: Match) {
-    val isTbd = match.team1.name.startsWith("TBD") || match.team2.name.startsWith("TBD")
+    val tbd1 = match.team1.name.startsWith("TBD")
+    val tbd2 = match.team2.name.startsWith("TBD")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -278,7 +279,7 @@ fun KnockoutMatchRow(match: Match) {
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (isTbd) {
+        if (tbd1 && tbd2) {
             Text(
                 text = match.note ?: "TBD vs TBD",
                 fontSize = 13.sp,
@@ -292,16 +293,23 @@ fun KnockoutMatchRow(match: Match) {
                 color = Gray400
             )
         } else {
+            val noteParts = match.note?.split(" vs ")
+            val t1Label = if (tbd1) noteParts?.getOrNull(0)?.let { shortNote(it) } ?: "TBD" else match.team1.name
+            val t2Label = if (tbd2) noteParts?.getOrNull(1)?.let { shortNote(it) } ?: "TBD" else match.team2.name
+
             Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
                 Text(
-                    match.team1.name,
+                    t1Label,
                     fontSize = 14.sp,
                     fontWeight = if (match.winner == MatchResult.TEAM1) FontWeight.SemiBold else FontWeight.Medium,
-                    color = if (match.winner == MatchResult.TEAM1) AppGreen else Gray700,
+                    fontStyle = if (tbd1) FontStyle.Italic else FontStyle.Normal,
+                    color = if (tbd1) Gray400 else if (match.winner == MatchResult.TEAM1) AppGreen else Gray700,
                     maxLines = 1, overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(match.team1.flagEmoji, fontSize = 18.sp)
+                if (!tbd1) {
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(match.team1.flagEmoji, fontSize = 18.sp)
+                }
             }
             Column(modifier = Modifier.widthIn(min = 75.dp).padding(horizontal = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 if (match.winner == MatchResult.UPCOMING) {
@@ -328,13 +336,16 @@ fun KnockoutMatchRow(match: Match) {
                 }
             }
             Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
-                Text(match.team2.flagEmoji, fontSize = 18.sp)
-                Spacer(modifier = Modifier.width(6.dp))
+                if (!tbd2) {
+                    Text(match.team2.flagEmoji, fontSize = 18.sp)
+                    Spacer(modifier = Modifier.width(6.dp))
+                }
                 Text(
-                    match.team2.name,
+                    t2Label,
                     fontSize = 14.sp,
                     fontWeight = if (match.winner == MatchResult.TEAM2) FontWeight.SemiBold else FontWeight.Medium,
-                    color = if (match.winner == MatchResult.TEAM2) AppGreen else Gray700,
+                    fontStyle = if (tbd2) FontStyle.Italic else FontStyle.Normal,
+                    color = if (tbd2) Gray400 else if (match.winner == MatchResult.TEAM2) AppGreen else Gray700,
                     maxLines = 1, overflow = TextOverflow.Ellipsis
                 )
             }
