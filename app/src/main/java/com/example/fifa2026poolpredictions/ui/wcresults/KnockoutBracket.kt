@@ -120,12 +120,12 @@ private val BRACKET_NOTES = mapOf(
 )
 
 // ── shortNote ─────────────────────────────────────────────────────────────────
-private fun shortNote(note: String): String = note
-    .replace(Regex("Winner Group ([A-L])"))    { "${it.groupValues[1]}1" }
-    .replace(Regex("Runner-up Group ([A-L])")) { "${it.groupValues[1]}2" }
-    .replace(Regex("3rd Place Group [A-L/]+"), "3rd")
-    .replace(Regex("Winner Match (\\d+)"))     { "W${it.groupValues[1]}" }
-    .replace(Regex("Loser Match (\\d+)"))      { "L${it.groupValues[1]}" }
+internal fun shortNote(note: String): String = note
+    .replace(Regex("Winner Group ([A-L])"))        { "${it.groupValues[1]}1" }
+    .replace(Regex("Runner-up Group ([A-L])"))     { "${it.groupValues[1]}2" }
+    .replace(Regex("3rd Place Group ([A-L/]+)"))   { "3rd ${it.groupValues[1]}" }
+    .replace(Regex("Winner Match (\\d+)"))         { "W${it.groupValues[1]}" }
+    .replace(Regex("Loser Match (\\d+)"))          { "L${it.groupValues[1]}" }
 
 // ── Entry point ───────────────────────────────────────────────────────────────
 @Composable
@@ -347,9 +347,11 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
             return@Box
         }
 
-        val isTbd = match.team1.name.startsWith("TBD") || match.team2.name.startsWith("TBD")
+        val tbd1 = match.team1.name.startsWith("TBD")
+        val tbd2 = match.team2.name.startsWith("TBD")
 
-        if (isTbd) {
+        // Both teams unknown: show note text only
+        if (tbd1 && tbd2) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -374,6 +376,11 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
             return@Box
         }
 
+        // For a partial-TBD side, derive label from note spec (e.g. "3rd C/D/F/G/H")
+        val noteParts = match.note?.split(" vs ")
+        val t1Label = if (tbd1) noteParts?.getOrNull(0)?.let { shortNote(it) } ?: "TBD" else match.team1.name
+        val t2Label = if (tbd2) noteParts?.getOrNull(1)?.let { shortNote(it) } ?: "TBD" else match.team2.name
+
         val w1       = match.winner == MatchResult.TEAM1
         val w2       = match.winner == MatchResult.TEAM2
         val upcoming = match.winner == MatchResult.UPCOMING
@@ -386,17 +393,18 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
         ) {
             // Team 1
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(match.team1.flagEmoji, fontSize = (12 * scale).sp)
+                if (!tbd1) Text(match.team1.flagEmoji, fontSize = (12 * scale).sp)
                 Text(
-                    text = match.team1.name,
+                    text = t1Label,
                     fontSize = (11 * scale).sp,
                     fontWeight = if (w1) FontWeight.SemiBold else FontWeight.Normal,
-                    color = if (w1) AppGreen else Gray700,
+                    color = if (tbd1) Gray400 else if (w1) AppGreen else Gray700,
+                    fontStyle = if (tbd1) FontStyle.Italic else FontStyle.Normal,
                     modifier = Modifier.weight(1f).padding(horizontal = (2 * scale).dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                if (!upcoming) {
+                if (!upcoming && !tbd1) {
                     Text(
                         text = match.team1Goals.toString(),
                         fontSize = (11 * scale).sp,
@@ -418,17 +426,18 @@ private fun BracketCard(match: Match?, cardW: Dp, cardH: Dp, scale: Float) {
             }
             // Team 2
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(match.team2.flagEmoji, fontSize = (12 * scale).sp)
+                if (!tbd2) Text(match.team2.flagEmoji, fontSize = (12 * scale).sp)
                 Text(
-                    text = match.team2.name,
+                    text = t2Label,
                     fontSize = (11 * scale).sp,
                     fontWeight = if (w2) FontWeight.SemiBold else FontWeight.Normal,
-                    color = if (w2) AppGreen else Gray700,
+                    color = if (tbd2) Gray400 else if (w2) AppGreen else Gray700,
+                    fontStyle = if (tbd2) FontStyle.Italic else FontStyle.Normal,
                     modifier = Modifier.weight(1f).padding(horizontal = (2 * scale).dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                if (!upcoming) {
+                if (!upcoming && !tbd2) {
                     Text(
                         text = match.team2Goals.toString(),
                         fontSize = (11 * scale).sp,

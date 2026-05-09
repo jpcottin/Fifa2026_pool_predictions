@@ -44,6 +44,7 @@ import com.example.fifa2026poolpredictions.data.model.MatchResult
 import com.example.fifa2026poolpredictions.data.model.Phase
 import com.example.fifa2026poolpredictions.data.model.Team
 import com.example.fifa2026poolpredictions.theme.*
+import com.example.fifa2026poolpredictions.ui.wcresults.shortNote
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +114,8 @@ fun MatchesList(sections: List<MatchSection>, modifier: Modifier = Modifier) {
 
 @Composable
 fun MatchRow(match: Match, modifier: Modifier = Modifier) {
-    val isPending = match.team1.name.startsWith("TBD") || match.team2.name.startsWith("TBD")
+    val tbd1 = match.team1.name.startsWith("TBD")
+    val tbd2 = match.team2.name.startsWith("TBD")
     val isPlayed = match.winner != MatchResult.UPCOMING
 
     Card(
@@ -126,7 +128,7 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            if (isPending) {
+            if (tbd1 && tbd2) {
                 val noteText = match.note ?: "TBD vs TBD"
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -145,6 +147,10 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                     )
                 }
             } else {
+                val noteParts = match.note?.split(" vs ")
+                val t1Label = if (tbd1) noteParts?.getOrNull(0)?.let { shortNote(it) } ?: "TBD" else match.team1.name
+                val t2Label = if (tbd2) noteParts?.getOrNull(1)?.let { shortNote(it) } ?: "TBD" else match.team2.name
+
                 // Team 1
                 Row(
                     modifier = Modifier.weight(1f),
@@ -152,18 +158,21 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = match.team1.name,
+                        text = t1Label,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black,
+                        fontStyle = if (tbd1) FontStyle.Italic else FontStyle.Normal,
+                        color = if (tbd1) Gray400 else Color.Black,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = match.team1.flagEmoji,
-                        fontSize = 20.sp
-                    )
+                    if (!tbd1) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = match.team1.flagEmoji,
+                            fontSize = 20.sp
+                        )
+                    }
                 }
 
                 // Score / Date
@@ -189,7 +198,7 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                                 text = annotation,
                                 fontSize = 10.sp,
                                 color = Gray400,
-                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                                fontStyle = FontStyle.Italic
                             )
                         }
                     } else {
@@ -210,16 +219,19 @@ fun MatchRow(match: Match, modifier: Modifier = Modifier) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
+                    if (!tbd2) {
+                        Text(
+                            text = match.team2.flagEmoji,
+                            fontSize = 20.sp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
                     Text(
-                        text = match.team2.flagEmoji,
-                        fontSize = 20.sp
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = match.team2.name,
+                        text = t2Label,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black,
+                        fontStyle = if (tbd2) FontStyle.Italic else FontStyle.Normal,
+                        color = if (tbd2) Gray400 else Color.Black,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
