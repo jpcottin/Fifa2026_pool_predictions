@@ -1,14 +1,18 @@
 package com.example.fifa2026poolpredictions.ui.leaderboard
 
+import com.example.fifa2026poolpredictions.data.model.League
 import com.example.fifa2026poolpredictions.data.model.Match
 import com.example.fifa2026poolpredictions.data.model.MatchResult
 import com.example.fifa2026poolpredictions.data.model.Selection
 import com.example.fifa2026poolpredictions.data.model.Team
 import com.example.fifa2026poolpredictions.data.repository.Fifa2026Repository
+import com.example.fifa2026poolpredictions.league.LeagueManager
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -22,7 +26,11 @@ class LeaderboardViewModelTest {
 
     private lateinit var viewModel: LeaderboardViewModel
     private val repository: Fifa2026Repository = mockk()
+    private val leagueManager: LeagueManager = mockk(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
+
+    private val mockLeagueId = "league-1"
+    private val mockLeagues = listOf(League("league-1", "OTV", "otv"))
 
     private val mockTeams = listOf(
         Team("1", "Team A", "🇦", 1, 0.0),
@@ -46,29 +54,31 @@ class LeaderboardViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        every { leagueManager.selectedLeagueId } returns MutableStateFlow(mockLeagueId)
+        every { leagueManager.leagues } returns MutableStateFlow(mockLeagues)
         coEvery { repository.getTeams() } returns Result.success(mockTeams)
-        coEvery { repository.getSelections() } returns Result.success(mockSelections)
+        coEvery { repository.getSelections(any()) } returns Result.success(mockSelections)
         coEvery { repository.getMatches() } returns Result.success(mockMatches)
-        viewModel = LeaderboardViewModel(repository, "u1")
+        viewModel = LeaderboardViewModel(repository, "u1", leagueManager)
     }
 
     @Test
     fun `load calculates correct ranks with ties`() = runTest {
         advanceUntilIdle()
         val state = viewModel.state.value as LeaderboardUiState.Success
-        
+
         // Sorted by score (desc) then createdAt (asc)
         // s1: 10.0 (12:00) -> Rank 1
         // s3: 10.0 (14:00) -> Rank 1
         // s2: 8.0 (13:00) -> Rank 3
-        
+
         assertEquals(3, state.ranked.size)
         assertEquals("s1", state.ranked[0].selection.id)
         assertEquals(1, state.ranked[0].rank)
-        
+
         assertEquals("s3", state.ranked[1].selection.id)
         assertEquals(1, state.ranked[1].rank)
-        
+
         assertEquals("s2", state.ranked[2].selection.id)
         assertEquals(3, state.ranked[2].rank)
     }
@@ -79,6 +89,14 @@ class LeaderboardViewModelTest {
         val state = viewModel.state.value as LeaderboardUiState.Success
         assertEquals(2, state.matchesPlayed)
         assertEquals(2, state.matchesUpcoming)
+    }
+
+    @Test
+    fun `load exposes leagues and selectedLeagueId`() = runTest {
+        advanceUntilIdle()
+        val state = viewModel.state.value as LeaderboardUiState.Success
+        assertEquals(mockLeagues, state.leagues)
+        assertEquals(mockLeagueId, state.selectedLeagueId)
     }
 
     @Test
@@ -105,13 +123,26 @@ class LeaderboardViewModelTest {
 
     @Test
     fun `toggleMineOnly with null userId still shows all selections`() = runTest {
-        // Without a logged-in user, "mine" filter cannot apply — all selections are returned
-        val anonViewModel = LeaderboardViewModel(repository, currentUserId = null)
+        val anonViewModel = LeaderboardViewModel(repository, currentUserId = null, leagueManager)
         advanceUntilIdle()
         anonViewModel.toggleMineOnly()
 
         val state = anonViewModel.state.value as LeaderboardUiState.Success
         assertEquals(true, state.showMineOnly)
         assertEquals(3, state.ranked.size)
+    }
+
+    @Test
+    fun `empty leagues shows no league state`() = runTest {
+        every { leagueManager.leagues } returns MutableStateFlow(emptyList())
+        every { leagueManager.selectedLeagueId } returns MutableStateFlow(null)
+        coEvery { repository.getSelections(null) } returns Result.success(emptyList())
+        val noLeagueVm = LeaderboardViewModel(repository, "u1", leagueManager)
+        advanceUntilIdle()
+
+        val state = noLeagueVm.state.value as LeaderboardUiState.Success
+        assertEquals(emptyList<Any>(), state.leagues)
+        assertEquals(null, state.selectedLeagueId)
+        assertEquals(0, state.ranked.size)
     }
 }

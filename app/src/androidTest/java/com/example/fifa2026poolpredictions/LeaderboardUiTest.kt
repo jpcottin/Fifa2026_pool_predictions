@@ -182,4 +182,53 @@ class LeaderboardUiTest {
             assert(sels.size == 2) { "Each player should have exactly 2 selections" }
         }
     }
+
+    // ── League feature ────────────────────────────────────────────────────
+
+    @Test
+    fun leaderboard_noLeague_showsNoLeagueMessage() {
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                LeaderboardContent(state = TestFixtures.leaderboardStateNoLeague(), onToggleMine = {})
+            }
+        }
+        composeTestRule.onNodeWithText("You haven't been added to a league yet. Ask your admin.", substring = true)
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun leaderboard_noLeague_hidesMatchStats() {
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                LeaderboardContent(state = TestFixtures.leaderboardStateNoLeague(), onToggleMine = {})
+            }
+        }
+        composeTestRule.onNodeWithText("Matches Played").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Matches to Go").assertDoesNotExist()
+    }
+
+    @Test
+    fun leaderboard_multiLeague_showsFilterChips() {
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                LeaderboardContent(
+                    state = TestFixtures.leaderboardStateMultiLeague(),
+                    onToggleMine = {},
+                    onLeagueSelected = {}
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("OTV").assertIsDisplayed()
+        composeTestRule.onNodeWithText("LetsPlay").assertIsDisplayed()
+    }
+
+    @Test
+    fun leaderboard_singleLeague_hidesFilterChips() {
+        composeTestRule.setContent {
+            MyApplicationTheme {
+                LeaderboardContent(state = TestFixtures.leaderboardStateMid(), onToggleMine = {})
+            }
+        }
+        composeTestRule.onNodeWithText("OTV").assertDoesNotExist()
+    }
 }

@@ -68,12 +68,14 @@ fun MainNavigation() {
                     backStack.removeLastOrNull()
                     backStack.add(Home)
                 }
+                app.leagueManager.loadLeagues()
             }
             is AuthState.LoggedOut -> {
                 if (backStack.lastOrNull() !is Login) {
                     backStack.clear()
                     backStack.add(Login)
                 }
+                app.leagueManager.clear()
             }
             else -> Unit
         }
@@ -119,7 +121,7 @@ fun MainNavigation() {
             entryProvider = entryProvider {
                 entry<NewSelection> {
                     val vm: NewSelectionViewModel = viewModel(factory = viewModelFactory {
-                        initializer { NewSelectionViewModel(app.repository) }
+                        initializer { NewSelectionViewModel(app.repository, app.leagueManager) }
                     })
                     NewSelectionScreen(
                         viewModel = vm,
@@ -170,15 +172,18 @@ fun MainNavigation() {
             when (selectedDest) {
                 Home -> {
                     val vm: HomeViewModel = viewModel(key = "home_$userId", factory = viewModelFactory {
-                        initializer { HomeViewModel(repository) }
+                        initializer { HomeViewModel(repository, app.leagueManager) }
                     })
                     HomeScreen(viewModel = vm, onPickTeams = { selectedDest = MySelections })
                 }
                 Leaderboard -> {
                     val vm: LeaderboardViewModel = viewModel(key = "leaderboard_$userId", factory = viewModelFactory {
-                        initializer { LeaderboardViewModel(repository, userId) }
+                        initializer { LeaderboardViewModel(repository, userId, app.leagueManager) }
                     })
-                    LeaderboardScreen(viewModel = vm)
+                    LeaderboardScreen(
+                        viewModel = vm,
+                        onLeagueSelected = { app.leagueManager.selectLeague(it) }
+                    )
                 }
                 WcResults -> {
                     val vm: WcResultsViewModel = viewModel(key = "wcresults_$userId", factory = viewModelFactory {
@@ -194,7 +199,7 @@ fun MainNavigation() {
                 }
                 MySelections -> {
                     val vm: SelectionsViewModel = viewModel(key = "selections_$userId", factory = viewModelFactory {
-                        initializer { SelectionsViewModel(repository, userId) }
+                        initializer { SelectionsViewModel(repository, userId, app.leagueManager) }
                     })
                     SelectionsScreen(
                         viewModel = vm,

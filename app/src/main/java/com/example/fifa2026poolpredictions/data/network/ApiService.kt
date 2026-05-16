@@ -3,6 +3,7 @@ package com.example.fifa2026poolpredictions.data.network
 import com.example.fifa2026poolpredictions.data.model.AdminUser
 import com.example.fifa2026poolpredictions.data.model.CreateSelectionRequest
 import com.example.fifa2026poolpredictions.data.model.GameState
+import com.example.fifa2026poolpredictions.data.model.League
 import com.example.fifa2026poolpredictions.data.model.Match
 import com.example.fifa2026poolpredictions.data.model.MobileAuthRequest
 import com.example.fifa2026poolpredictions.data.model.MobileAuthResponse
@@ -16,19 +17,23 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @GET("api/teams")
     suspend fun getTeams(): List<Team>
 
     @GET("api/selections")
-    suspend fun getSelections(): List<Selection>
+    suspend fun getSelections(@Query("leagueId") leagueId: String? = null): List<Selection>
+
+    @GET("api/user/leagues")
+    suspend fun getUserLeagues(): List<League>
 
     @GET("api/matches")
     suspend fun getMatches(): List<Match>
 
     @GET("api/stats")
-    suspend fun getStats(): Stats
+    suspend fun getStats(@Query("leagueId") leagueId: String? = null): Stats
 
     @GET("api/game-state")
     suspend fun getGameState(): GameState
