@@ -6,6 +6,7 @@ import com.example.fifa2026poolpredictions.auth.AuthManager
 import com.example.fifa2026poolpredictions.data.local.TokenStore
 import com.example.fifa2026poolpredictions.data.network.buildApiService
 import com.example.fifa2026poolpredictions.data.repository.Fifa2026Repository
+import com.example.fifa2026poolpredictions.league.LeagueManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -15,6 +16,8 @@ class Fifa2026App : Application() {
     lateinit var repository: Fifa2026Repository
         private set
     lateinit var authManager: AuthManager
+        private set
+    lateinit var leagueManager: LeagueManager
         private set
 
     override fun onCreate() {
@@ -30,6 +33,7 @@ class Fifa2026App : Application() {
         )
         repository = Fifa2026Repository(apiService)
         authManager = AuthManager(tokenStore, repository)
+        leagueManager = LeagueManager(repository)
     }
 
     fun getApiBaseUrl(): String {

@@ -3,6 +3,7 @@ package com.example.fifa2026poolpredictions.data.repository
 import com.example.fifa2026poolpredictions.data.model.AdminUser
 import com.example.fifa2026poolpredictions.data.model.CreateSelectionRequest
 import com.example.fifa2026poolpredictions.data.model.GameState
+import com.example.fifa2026poolpredictions.data.model.League
 import com.example.fifa2026poolpredictions.data.model.Match
 import com.example.fifa2026poolpredictions.data.model.Stats
 import com.example.fifa2026poolpredictions.data.model.MobileAuthRequest
@@ -14,16 +15,18 @@ import com.example.fifa2026poolpredictions.data.model.UpdateMatchRequest
 import com.example.fifa2026poolpredictions.data.network.ApiService
 
 class Fifa2026Repository(private val api: ApiService) {
-    suspend fun getStats(): Result<Stats> = runCatching { api.getStats() }
+    suspend fun getStats(leagueId: String? = null): Result<Stats> = runCatching { api.getStats(leagueId) }
     suspend fun getTeams(): Result<List<Team>> = runCatching { api.getTeams() }
-    suspend fun getSelections(): Result<List<Selection>> = runCatching { api.getSelections() }
+    suspend fun getSelections(leagueId: String? = null): Result<List<Selection>> =
+        runCatching { api.getSelections(leagueId) }
+    suspend fun getLeagues(): Result<List<League>> = runCatching { api.getUserLeagues() }
     suspend fun getMatches(): Result<List<Match>> = runCatching { api.getMatches() }
     suspend fun getGameState(): Result<GameState> = runCatching { api.getGameState() }
     suspend fun getAdminUsers(): Result<List<AdminUser>> = runCatching { api.getAdminUsers() }
     suspend fun mobileAuth(idToken: String): Result<MobileAuthResponse> =
         runCatching { api.mobileAuth(MobileAuthRequest(idToken)) }
-    suspend fun createSelection(name: String, teamIds: List<String>): Result<Selection> =
-        runCatching { api.createSelection(CreateSelectionRequest(name, teamIds)) }
+    suspend fun createSelection(name: String, teamIds: List<String>, leagueId: String): Result<Selection> =
+        runCatching { api.createSelection(CreateSelectionRequest(name, teamIds, leagueId)) }
     suspend fun updateMatch(id: String, req: UpdateMatchRequest): Result<Match> =
         runCatching { api.updateMatch(id, req) }
     suspend fun updateGameState(state: String): Result<GameState> =

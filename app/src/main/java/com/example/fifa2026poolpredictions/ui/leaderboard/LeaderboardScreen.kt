@@ -19,11 +19,15 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -53,6 +57,7 @@ import com.example.fifa2026poolpredictions.theme.*
 @Composable
 fun LeaderboardScreen(
     viewModel: LeaderboardViewModel,
+    onLeagueSelected: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -77,7 +82,8 @@ fun LeaderboardScreen(
             PullToRefreshBox(isRefreshing = false, onRefresh = { viewModel.load() }, modifier = modifier) {
                 LeaderboardContent(
                     state = s,
-                    onToggleMine = { viewModel.toggleMineOnly() }
+                    onToggleMine = { viewModel.toggleMineOnly() },
+                    onLeagueSelected = onLeagueSelected
                 )
             }
         }
@@ -88,6 +94,7 @@ fun LeaderboardScreen(
 fun LeaderboardContent(
     state: LeaderboardUiState.Success,
     onToggleMine: () -> Unit,
+    onLeagueSelected: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
@@ -116,41 +123,77 @@ fun LeaderboardContent(
             }
         }
 
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                MatchStatCard(
-                    label = "Matches Played",
-                    value = state.matchesPlayed,
-                    valueColor = AppGreen,
-                    modifier = Modifier.weight(1f)
-                )
-                MatchStatCard(
-                    label = "Matches to Go",
-                    value = state.matchesUpcoming,
-                    valueColor = Gray400,
-                    modifier = Modifier.weight(1f)
-                )
+        if (state.leagues.size >= 2) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    state.leagues.forEach { league ->
+                        FilterChip(
+                            selected = league.id == state.selectedLeagueId,
+                            onClick = { onLeagueSelected(league.id) },
+                            label = { Text(league.name) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = AppGreen,
+                                selectedLabelColor = Color.White
+                            )
+                        )
+                    }
+                }
             }
         }
 
-        if (state.ranked.isEmpty()) {
+        if (state.leagues.isEmpty()) {
             item {
                 Text(
-                    text = "No selections yet.",
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                    text = "You haven't been added to a league yet. Ask your admin.",
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 32.dp),
                     textAlign = TextAlign.Center,
                     color = Gray500
                 )
             }
         } else {
-            items(state.ranked) { item ->
-                SelectionRow(item = item, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    MatchStatCard(
+                        label = "Matches Played",
+                        value = state.matchesPlayed,
+                        valueColor = AppGreen,
+                        modifier = Modifier.weight(1f)
+                    )
+                    MatchStatCard(
+                        label = "Matches to Go",
+                        value = state.matchesUpcoming,
+                        valueColor = Gray400,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            if (state.ranked.isEmpty()) {
+                item {
+                    Text(
+                        text = "No selections yet.",
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                        textAlign = TextAlign.Center,
+                        color = Gray500
+                    )
+                }
+            } else {
+                items(state.ranked) { item ->
+                    SelectionRow(item = item, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                }
             }
         }
     }
@@ -353,7 +396,7 @@ fun LeaderboardContentCompactPreview() {
 
     MyApplicationTheme {
         LeaderboardContent(
-            state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = "u1", matchesPlayed = 64, matchesUpcoming = 40),
+            state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = "u1", matchesPlayed = 64, matchesUpcoming = 40, leagues = emptyList(), selectedLeagueId = null),
             onToggleMine = {}
         )
     }
@@ -382,7 +425,7 @@ fun LeaderboardContentWidePreview() {
 
     MyApplicationTheme {
         LeaderboardContent(
-            state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = null, matchesPlayed = 64, matchesUpcoming = 40),
+            state = LeaderboardUiState.Success(ranked = rankedSelections, showMineOnly = false, currentUserId = null, matchesPlayed = 64, matchesUpcoming = 40, leagues = emptyList(), selectedLeagueId = null),
             onToggleMine = {}
         )
     }

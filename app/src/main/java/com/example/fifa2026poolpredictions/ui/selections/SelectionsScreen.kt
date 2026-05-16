@@ -112,6 +112,18 @@ fun SelectionsContent(
             }
         }
 
+        if (state.noLeague) {
+            item {
+                Text(
+                    text = "You haven't been added to a league yet.\nAsk your admin to add you.",
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                    textAlign = TextAlign.Center,
+                    color = Gray500
+                )
+            }
+            return@LazyColumn
+        }
+
         if (state.canAddMore) {
             item {
                 CountdownTimer(deadline = deadline)

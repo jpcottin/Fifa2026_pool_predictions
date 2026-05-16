@@ -2,10 +2,13 @@ package com.example.fifa2026poolpredictions.ui.selections
 
 import com.example.fifa2026poolpredictions.data.model.Team
 import com.example.fifa2026poolpredictions.data.repository.Fifa2026Repository
+import com.example.fifa2026poolpredictions.league.LeagueManager
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -20,6 +23,7 @@ class NewSelectionViewModelTest {
 
     private lateinit var viewModel: NewSelectionViewModel
     private val repository: Fifa2026Repository = mockk()
+    private val leagueManager: LeagueManager = mockk(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
 
     private val mockTeams = listOf(
@@ -36,8 +40,9 @@ class NewSelectionViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        every { leagueManager.selectedLeagueId } returns MutableStateFlow("league-1")
         coEvery { repository.getTeams() } returns Result.success(mockTeams)
-        viewModel = NewSelectionViewModel(repository)
+        viewModel = NewSelectionViewModel(repository, leagueManager)
     }
 
     @Test
@@ -77,5 +82,17 @@ class NewSelectionViewModelTest {
         viewModel.submit()
         assertNotNull(viewModel.state.value.error)
         assertEquals(true, viewModel.state.value.error?.contains("Set 2"))
+    }
+
+    @Test
+    fun `submit with no league sets error`() = runTest {
+        every { leagueManager.selectedLeagueId } returns MutableStateFlow(null)
+        val noLeagueVm = NewSelectionViewModel(repository, leagueManager)
+        advanceUntilIdle()
+        noLeagueVm.onNameChange("Valid Name")
+        (1..8).forEach { set -> noLeagueVm.onPickTeam(set, mockTeams[set - 1].id) }
+        noLeagueVm.submit()
+        assertNotNull(noLeagueVm.state.value.error)
+        assertEquals(true, noLeagueVm.state.value.error?.contains("league"))
     }
 }

@@ -3,6 +3,7 @@ package com.example.fifa2026poolpredictions.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fifa2026poolpredictions.data.repository.Fifa2026Repository
+import com.example.fifa2026poolpredictions.league.LeagueManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,18 +25,26 @@ data class HomeUiState(
     val error: String? = null
 )
 
-class HomeViewModel(private val repository: Fifa2026Repository) : ViewModel() {
+class HomeViewModel(
+    private val repository: Fifa2026Repository,
+    private val leagueManager: LeagueManager
+) : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state
 
-    init { load() }
+    init {
+        viewModelScope.launch {
+            leagueManager.selectedLeagueId.collect { load() }
+        }
+    }
 
     fun load() {
+        val leagueId = leagueManager.selectedLeagueId.value
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 coroutineScope {
-                    val statsDeferred     = async { repository.getStats().getOrThrow() }
+                    val statsDeferred     = async { repository.getStats(leagueId).getOrThrow() }
                     val gameStateDeferred = async { repository.getGameState().getOrThrow() }
 
                     val stats     = statsDeferred.await()

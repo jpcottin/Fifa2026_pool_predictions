@@ -549,12 +549,17 @@ object TestFixtures {
         return MatchesUiState.Success(sections)
     }
 
+    val testLeague = League("l1", "OTV", "otv")
+    val testLeague2 = League("l2", "LetsPlay", "letsplay")
+
     fun leaderboardStateMid(): LeaderboardUiState.Success = LeaderboardUiState.Success(
         ranked = rankedSelections(selections50()),
         showMineOnly = false,
         currentUserId = "u1",
         matchesPlayed = 50,
-        matchesUpcoming = 54
+        matchesUpcoming = 54,
+        leagues = listOf(testLeague),
+        selectedLeagueId = testLeague.id
     )
 
     fun leaderboardStateMidMineOnly(): LeaderboardUiState.Success {
@@ -564,7 +569,9 @@ object TestFixtures {
             showMineOnly = true,
             currentUserId = "u1",
             matchesPlayed = 50,
-            matchesUpcoming = 54
+            matchesUpcoming = 54,
+            leagues = listOf(testLeague),
+            selectedLeagueId = testLeague.id
         )
     }
 
@@ -573,7 +580,29 @@ object TestFixtures {
         showMineOnly = false,
         currentUserId = "u1",
         matchesPlayed = 104,
-        matchesUpcoming = 0
+        matchesUpcoming = 0,
+        leagues = listOf(testLeague),
+        selectedLeagueId = testLeague.id
+    )
+
+    fun leaderboardStateNoLeague(): LeaderboardUiState.Success = LeaderboardUiState.Success(
+        ranked = emptyList(),
+        showMineOnly = false,
+        currentUserId = "u1",
+        matchesPlayed = 0,
+        matchesUpcoming = 104,
+        leagues = emptyList(),
+        selectedLeagueId = null
+    )
+
+    fun leaderboardStateMultiLeague(): LeaderboardUiState.Success = LeaderboardUiState.Success(
+        ranked = rankedSelections(selections50()),
+        showMineOnly = false,
+        currentUserId = "u1",
+        matchesPlayed = 50,
+        matchesUpcoming = 54,
+        leagues = listOf(testLeague, testLeague2),
+        selectedLeagueId = testLeague.id
     )
 
     // ── Home screen states ────────────────────────────────────────────────

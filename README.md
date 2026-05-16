@@ -11,7 +11,8 @@ This app serves as the mobile UI Client for the service hosted at:
 
 ## Features
 - **Google Authentication:** Secure login using modern Android Credential Manager.
-- **Leaderboard:** Real-time global rankings of all user selections.
+- **Leagues:** Players are assigned to leagues by the admin via the web app. The app automatically loads the user's league(s) after sign-in and scopes all leaderboard and selections data to the active league. When a user belongs to multiple leagues, a filter-chip row appears in the Leaderboard screen to switch between them. Users without a league see a friendly prompt to contact their admin.
+- **Leaderboard:** Real-time rankings scoped to the user's active league. Supports a league picker when the user belongs to multiple leagues.
 - **Home:** Tournament overview with player/selection counts, countdowns to kickoff and the Final, game state badge, and a full "How It Works" scoring guide.
 - **WC Results:** Live group standings, match results for all 12 groups, and a full knockout bracket (Round of 32 through Final) with a tab view on phones and a scaled canvas bracket on tablets/foldables.
 - **My Picks:** Manage and track your own team selections with live countdowns to the tournament start. Includes a **Sets** tab showing all 8 ranked sets of 6 teams with their current tournament scores.

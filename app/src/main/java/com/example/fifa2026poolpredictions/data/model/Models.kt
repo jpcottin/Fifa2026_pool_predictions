@@ -78,9 +78,17 @@ data class MobileAuthRequest(val idToken: String)
 data class MobileAuthResponse(val token: String)
 
 @Serializable
+data class League(
+    val id: String,
+    val name: String,
+    val slug: String
+)
+
+@Serializable
 data class CreateSelectionRequest(
     val name: String,
-    val teamIds: List<String>
+    val teamIds: List<String>,
+    val leagueId: String
 )
 
 @Serializable

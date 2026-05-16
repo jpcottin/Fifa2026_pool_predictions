@@ -2,11 +2,13 @@ package com.example.fifa2026poolpredictions.ui.leaderboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fifa2026poolpredictions.data.model.League
 import com.example.fifa2026poolpredictions.data.model.Match
 import com.example.fifa2026poolpredictions.data.model.MatchResult
 import com.example.fifa2026poolpredictions.data.model.Selection
 import com.example.fifa2026poolpredictions.data.model.Team
 import com.example.fifa2026poolpredictions.data.repository.Fifa2026Repository
+import com.example.fifa2026poolpredictions.league.LeagueManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,14 +28,17 @@ sealed class LeaderboardUiState {
         val showMineOnly: Boolean,
         val currentUserId: String?,
         val matchesPlayed: Int,
-        val matchesUpcoming: Int
+        val matchesUpcoming: Int,
+        val leagues: List<League>,
+        val selectedLeagueId: String?
     ) : LeaderboardUiState()
     data class Error(val message: String) : LeaderboardUiState()
 }
 
 class LeaderboardViewModel(
     private val repository: Fifa2026Repository,
-    private val currentUserId: String?
+    private val currentUserId: String?,
+    private val leagueManager: LeagueManager
 ) : ViewModel() {
     private val _state = MutableStateFlow<LeaderboardUiState>(LeaderboardUiState.Loading)
     val state: StateFlow<LeaderboardUiState> = _state
@@ -44,23 +49,27 @@ class LeaderboardViewModel(
     private var showMineOnly = false
 
     init {
-        load()
+        viewModelScope.launch {
+            leagueManager.selectedLeagueId.collect { load() }
+        }
     }
 
     fun load() {
+        val leagueId = leagueManager.selectedLeagueId.value
+        val leagues = leagueManager.leagues.value
         viewModelScope.launch {
             _state.value = LeaderboardUiState.Loading
             try {
                 coroutineScope {
                     val teamsDeferred = async { repository.getTeams().getOrThrow() }
-                    val selectionsDeferred = async { repository.getSelections().getOrThrow() }
+                    val selectionsDeferred = async { repository.getSelections(leagueId).getOrThrow() }
                     val matchesDeferred = async { repository.getMatches().getOrThrow() }
                     teamMap = teamsDeferred.await().associateBy { it.id }
                     allSelections = selectionsDeferred.await()
                         .sortedWith(compareByDescending<Selection> { it.score }.thenBy { it.createdAt })
                     allMatches = matchesDeferred.await()
                 }
-                updateState()
+                updateState(leagues, leagueId)
             } catch (e: Exception) {
                 _state.value = LeaderboardUiState.Error(e.message ?: "Failed to load")
             }
@@ -69,10 +78,10 @@ class LeaderboardViewModel(
 
     fun toggleMineOnly() {
         showMineOnly = !showMineOnly
-        updateState()
+        updateState(leagueManager.leagues.value, leagueManager.selectedLeagueId.value)
     }
 
-    private fun updateState() {
+    private fun updateState(leagues: List<League>, selectedLeagueId: String?) {
         val filtered = if (showMineOnly && currentUserId != null) {
             allSelections.filter { it.userId == currentUserId }
         } else allSelections
@@ -88,6 +97,8 @@ class LeaderboardViewModel(
         }
         val played = allMatches.count { it.winner != MatchResult.UPCOMING }
         val upcoming = allMatches.count { it.winner == MatchResult.UPCOMING }
-        _state.value = LeaderboardUiState.Success(ranked, showMineOnly, currentUserId, played, upcoming)
+        _state.value = LeaderboardUiState.Success(
+            ranked, showMineOnly, currentUserId, played, upcoming, leagues, selectedLeagueId
+        )
     }
 }

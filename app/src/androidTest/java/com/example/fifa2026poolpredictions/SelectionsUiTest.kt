@@ -21,6 +21,37 @@ class SelectionsUiTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // ── League feature ────────────────────────────────────────────────────
+
+    @Test
+    fun selectionsContent_noLeague_showsNoLeagueMessage() {
+        val state = SelectionsUiState.Success(
+            mySelections = emptyList(),
+            gameState = GameState("singleton", "PREPARING"),
+            canAddMore = false,
+            noLeague = true
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme { SelectionsContent(state = state, onAddNew = {}) }
+        }
+        composeTestRule.onNodeWithText("You haven't been added to a league yet", substring = true)
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun selectionsContent_noLeague_hidesAddButton() {
+        val state = SelectionsUiState.Success(
+            mySelections = emptyList(),
+            gameState = GameState("singleton", "PREPARING"),
+            canAddMore = false,
+            noLeague = true
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme { SelectionsContent(state = state, onAddNew = {}) }
+        }
+        composeTestRule.onNodeWithText("+ New Selection").assertDoesNotExist()
+    }
+
     @Test
     fun selectionsContent_showsCountdownAndButton_whenPicksLessThan3() {
         val state = SelectionsUiState.Success(

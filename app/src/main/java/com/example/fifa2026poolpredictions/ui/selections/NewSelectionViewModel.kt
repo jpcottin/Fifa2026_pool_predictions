@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fifa2026poolpredictions.data.model.Team
 import com.example.fifa2026poolpredictions.data.repository.Fifa2026Repository
+import com.example.fifa2026poolpredictions.league.LeagueManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,7 +19,10 @@ data class NewSelectionUiState(
     val picks: Map<Int, String> = emptyMap() // set -> teamId
 )
 
-class NewSelectionViewModel(private val repository: Fifa2026Repository) : ViewModel() {
+class NewSelectionViewModel(
+    private val repository: Fifa2026Repository,
+    private val leagueManager: LeagueManager
+) : ViewModel() {
     private val _state = MutableStateFlow(NewSelectionUiState())
     val state: StateFlow<NewSelectionUiState> = _state
 
@@ -32,8 +36,8 @@ class NewSelectionViewModel(private val repository: Fifa2026Repository) : ViewMo
                 onSuccess = { teams ->
                     val pickableTeams = teams.filter { it.set > 0 }
                     _state.value = _state.value.copy(
-                        teams = pickableTeams, 
-                        loading = false, 
+                        teams = pickableTeams,
+                        loading = false,
                         picks = emptyMap()
                     )
                 },
@@ -51,7 +55,7 @@ class NewSelectionViewModel(private val repository: Fifa2026Repository) : ViewMo
     fun onPickTeam(set: Int, teamId: String) {
         _state.value = _state.value.copy(
             picks = _state.value.picks + (set to teamId),
-            error = null // Clear error when they make a pick
+            error = null
         )
     }
 
@@ -61,17 +65,23 @@ class NewSelectionViewModel(private val repository: Fifa2026Repository) : ViewMo
             _state.value = s.copy(error = "Please enter a selection name")
             return
         }
-        
+
         val missingSets = (1..8).filter { !s.picks.containsKey(it) }
         if (missingSets.isNotEmpty()) {
             _state.value = s.copy(error = "Please pick a team for: " + missingSets.joinToString(", ") { "Set $it" })
             return
         }
 
+        val leagueId = leagueManager.selectedLeagueId.value
+        if (leagueId == null) {
+            _state.value = s.copy(error = "No league selected. Contact your admin to be added to a league.")
+            return
+        }
+
         val teamIds = s.picks.values.toList()
         viewModelScope.launch {
             _state.value = _state.value.copy(saving = true, error = null)
-            repository.createSelection(s.name.trim(), teamIds).fold(
+            repository.createSelection(s.name.trim(), teamIds, leagueId).fold(
                 onSuccess = {
                     _state.value = _state.value.copy(saving = false, success = true)
                 },
