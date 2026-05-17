@@ -341,6 +341,6 @@ class SelectionsUiTest {
         composeTestRule.setContent {
             MyApplicationTheme { SelectionsContent(state = state, onAddNew = {}) }
         }
-        composeTestRule.onNodeWithText("You haven't made any picks yet").assertIsDisplayed()
+        composeTestRule.onNodeWithText("You haven't made any picks yet.").assertIsDisplayed()
     }
 }
