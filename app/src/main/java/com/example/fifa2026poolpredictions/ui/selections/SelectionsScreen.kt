@@ -3,22 +3,12 @@ package com.example.fifa2026poolpredictions.ui.selections
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -99,7 +89,12 @@ fun SelectionsContent(
 ) {
     val deadline = 1781204400000L // June 11 2026 19:00 UTC (noon PDT)
 
-    LazyColumn(modifier = modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = WindowInsets.safeDrawing
+            .add(WindowInsets(left = 16.dp, top = 0.dp, right = 16.dp, bottom = 0.dp))
+            .asPaddingValues()
+    ) {
         item {
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -267,30 +262,17 @@ fun SetsContent(teams: List<Team>, modifier: Modifier = Modifier) {
         return
     }
 
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val isWide = maxWidth > 600.dp
-        if (isWide) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(sortedSets, key = { it.key }) { (setNum, setTeams) ->
-                    SetCard(setNumber = setNum, teams = setTeams.sortedByDescending { it.score })
-                }
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(sortedSets, key = { it.key }) { (setNum, setTeams) ->
-                    SetCard(setNumber = setNum, teams = setTeams.sortedByDescending { it.score })
-                }
-            }
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(300.dp),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = WindowInsets.safeDrawing
+            .add(WindowInsets(left = 16.dp, top = 16.dp, right = 16.dp, bottom = 16.dp))
+            .asPaddingValues(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(sortedSets, key = { it.key }) { (setNum, setTeams) ->
+            SetCard(setNumber = setNum, teams = setTeams.sortedByDescending { it.score })
         }
     }
 }
