@@ -55,8 +55,10 @@ fun WcResultsScreen(viewModel: WcResultsViewModel, modifier: Modifier = Modifier
         is WcResultsUiState.Success -> {
             PullToRefreshBox(isRefreshing = false, onRefresh = { viewModel.load() }, modifier = modifier) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                    contentPadding = PaddingValues(vertical = 16.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = WindowInsets.safeDrawing
+                        .add(WindowInsets(left = 16.dp, top = 16.dp, right = 16.dp, bottom = 16.dp))
+                        .asPaddingValues(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {

@@ -8,6 +8,23 @@ import com.example.fifa2026poolpredictions.ui.selections.*
 import org.junit.Rule
 import org.junit.Test
 
+private val cardTeams = listOf(
+    Team("t1", "France", "🇫🇷", 1, 6.0),
+    Team("t2", "Germany", "🇩🇪", 2, 4.0),
+    Team("t3", "Brazil", "🇧🇷", 3, 3.0),
+    Team("t4", "Japan", "🇯🇵", 4, 2.0),
+    Team("t5", "Morocco", "🇲🇦", 5, 1.5),
+    Team("t6", "England", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", 6, 1.0),
+    Team("t7", "USA", "🇺🇸", 7, 0.5),
+    Team("t8", "Portugal", "🇵🇹", 8, 0.0),
+)
+
+private fun mySelection(id: String, name: String, rank: Int, score: Double) = MySelection(
+    selection = Selection(id, name, "u1", cardTeams.map { it.id }, score, user = SelectionUser("Alice")),
+    rank = rank,
+    teams = cardTeams
+)
+
 private val sampleSetsTeams = listOf(
     Team("s1a", "France",      "🇫🇷", 1, 9.0),
     Team("s1b", "Underdog",    "🏳",  1, 1.0),
@@ -221,5 +238,109 @@ class SelectionsUiTest {
         assert(set1.all { it.score > 0.0 }) { "All set 1 teams should have a non-zero score after 104 games" }
         val topTeam = set1.maxByOrNull { it.score }
         assert(topTeam?.name == "France") { "France should lead set 1 after 104 games, got ${topTeam?.name}" }
+    }
+
+    // ── MySelectionCard rendering ─────────────────────────────────────────
+
+    @Test
+    fun mySelectionCard_rank1_showsGoldMedal() {
+        composeTestRule.setContent {
+            MyApplicationTheme { MySelectionCard(item = mySelection("s1", "Dream Team", 1, 18.5)) }
+        }
+        composeTestRule.onNodeWithText("🥇").assertIsDisplayed()
+    }
+
+    @Test
+    fun mySelectionCard_rank2_showsSilverMedal() {
+        composeTestRule.setContent {
+            MyApplicationTheme { MySelectionCard(item = mySelection("s2", "Silver Pick", 2, 14.0)) }
+        }
+        composeTestRule.onNodeWithText("🥈").assertIsDisplayed()
+    }
+
+    @Test
+    fun mySelectionCard_rank3_showsBronzeMedal() {
+        composeTestRule.setContent {
+            MyApplicationTheme { MySelectionCard(item = mySelection("s3", "Bronze Pick", 3, 10.0)) }
+        }
+        composeTestRule.onNodeWithText("🥉").assertIsDisplayed()
+    }
+
+    @Test
+    fun mySelectionCard_highRank_showsNumberedRank() {
+        composeTestRule.setContent {
+            MyApplicationTheme { MySelectionCard(item = mySelection("s4", "Long Shot", 12, 4.5)) }
+        }
+        composeTestRule.onNodeWithText("#12").assertIsDisplayed()
+    }
+
+    @Test
+    fun mySelectionCard_showsSelectionName() {
+        composeTestRule.setContent {
+            MyApplicationTheme { MySelectionCard(item = mySelection("s1", "My Favourites", 1, 18.5)) }
+        }
+        composeTestRule.onNodeWithText("My Favourites").assertIsDisplayed()
+    }
+
+    @Test
+    fun mySelectionCard_showsFormattedScore() {
+        composeTestRule.setContent {
+            MyApplicationTheme { MySelectionCard(item = mySelection("s1", "Top Pick", 1, 18.5)) }
+        }
+        composeTestRule.onNodeWithText("18.5").assertIsDisplayed()
+    }
+
+    @Test
+    fun mySelectionCard_showsAllTeamFlags() {
+        composeTestRule.setContent {
+            MyApplicationTheme { MySelectionCard(item = mySelection("s1", "Flag Test", 1, 10.0)) }
+        }
+        // All 8 flags joined in a single text
+        composeTestRule.onNodeWithText("🇫🇷 🇩🇪 🇧🇷 🇯🇵 🇲🇦 🏴󠁧󠁢󠁥󠁮󠁧󠁿 🇺🇸 🇵🇹").assertIsDisplayed()
+    }
+
+    @Test
+    fun mySelectionCard_showsTeamNamesInGrid() {
+        composeTestRule.setContent {
+            MyApplicationTheme { MySelectionCard(item = mySelection("s1", "Names Test", 1, 10.0)) }
+        }
+        composeTestRule.onNodeWithText("France").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Germany").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Brazil").assertIsDisplayed()
+    }
+
+    // ── My Picks list with multiple selections ────────────────────────────
+
+    @Test
+    fun selectionsContent_showsAllMySelectionsInList() {
+        val picks = listOf(
+            mySelection("s1", "Pick One", 1, 20.0),
+            mySelection("s2", "Pick Two", 3, 12.0),
+        )
+        val state = SelectionsUiState.Success(
+            mySelections = picks,
+            gameState = GameState("singleton", "STARTED"),
+            canAddMore = false,
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme { SelectionsContent(state = state, onAddNew = {}) }
+        }
+        composeTestRule.onNodeWithText("Pick One").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Pick Two").assertIsDisplayed()
+        composeTestRule.onNodeWithText("20.0").assertIsDisplayed()
+        composeTestRule.onNodeWithText("12.0").assertIsDisplayed()
+    }
+
+    @Test
+    fun selectionsContent_emptyPicks_showsNoPicsYetMessage() {
+        val state = SelectionsUiState.Success(
+            mySelections = emptyList(),
+            gameState = GameState("singleton", "STARTED"),
+            canAddMore = false,
+        )
+        composeTestRule.setContent {
+            MyApplicationTheme { SelectionsContent(state = state, onAddNew = {}) }
+        }
+        composeTestRule.onNodeWithText("You haven't made any picks yet.").assertIsDisplayed()
     }
 }

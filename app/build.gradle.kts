@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.screenshot)
 }
 
 android {
@@ -41,6 +42,7 @@ android {
         aidl = false
         shaders = false
     }
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     packaging {
         resources {
@@ -96,6 +98,10 @@ dependencies {
 
     // Storage
     implementation(libs.datastore.preferences)
+
+    // Screenshot tests
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 
     // Tests
     testImplementation(libs.junit)

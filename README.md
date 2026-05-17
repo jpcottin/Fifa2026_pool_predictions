@@ -28,7 +28,15 @@ This app serves as the mobile UI Client for the service hosted at:
 - **Navigation:** Navigation3 (modern Compose-first navigation)
 - **Dependency Injection:** Manual factory-based injection
 - **Local Storage:** DataStore (for tokens) and SharedPreferences (for settings)
-- **Testing:** JUnit 4 & Compose UI Test Rule — 96 instrumented UI tests covering Home, Matches (including extra time and penalty kick annotations), Leaderboard, WC Results (including knockout ET/PK annotations for both phone tab view and tablet canvas view), Selections (including Sets tab with tournament-accurate scores), and Admin (including ET/PK dialog controls) across mid-tournament and full-tournament fixture scenarios, verified on phone, foldable (unfolded), and tablet form factors
+- **Testing:** JUnit 4 & Compose UI Test Rule — 112 instrumented UI tests covering Home, Matches (including extra time and penalty kick annotations), Leaderboard, WC Results (including knockout ET/PK annotations for both phone tab view and tablet canvas view), Selections (including MySelectionCard rank/score/flag rendering and Sets tab with tournament-accurate scores), and Admin (including ET/PK dialog controls) across mid-tournament and full-tournament fixture scenarios, verified on phone, foldable (unfolded), and tablet form factors. 102 local unit tests covering all ViewModels (including SelectionsViewModel and HomeViewModel). Plus 15 host-side screenshot tests (Compose Preview Screenshot Testing) across Phone, Foldable, and Tablet form factors.
+
+## Android Development Skills Applied
+
+This project uses Android CLI skills recommended by Google DevRel to enforce platform best practices:
+
+- **edge-to-edge** — All screens use `WindowInsets.safeDrawing` via `contentPadding` so content scrolls behind system bars correctly.
+- **adaptive** — `SetsContent` uses `GridCells.Adaptive(300.dp)` to automatically reflow from 1 column on phones to 2+ on tablets/foldables.
+- **testing-setup** — Compose Preview Screenshot Testing (`validateDebugScreenshotTest`) covers 5 screens × 3 form factors (Phone, Foldable, Tablet), 15 reference images total.
 
 ## Getting Started
 1. Clone the repository.

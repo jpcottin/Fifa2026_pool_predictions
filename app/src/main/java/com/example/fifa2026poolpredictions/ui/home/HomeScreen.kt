@@ -55,8 +55,10 @@ fun HomeContent(state: HomeUiState, onPickTeams: () -> Unit, modifier: Modifier 
     val isPreparing = state.gameState == "PREPARING"
 
     LazyColumn(
-        modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(vertical = 16.dp),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = WindowInsets.safeDrawing
+            .add(WindowInsets(left = 16.dp, top = 16.dp, right = 16.dp, bottom = 16.dp))
+            .asPaddingValues(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
             // ── Hero ────────────────────────────────────────────────────────

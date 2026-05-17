@@ -68,7 +68,7 @@ class SelectionsViewModel(
                         MySelection(sel, ranksMap[sel.id] ?: 0, sel.teamIds.mapNotNull { teamMap[it] })
                     }
                 val isPreparing = gameState?.state == "PREPARING"
-                val deadline = System.currentTimeMillis() < 1_749_600_000_000L // June 11 2026 00:00 UTC
+                val deadline = System.currentTimeMillis() < 1_781_204_400_000L // June 11 2026 19:00 UTC (noon PDT)
                 _state.value = SelectionsUiState.Success(
                     mySelections = mine,
                     gameState = gameState,
